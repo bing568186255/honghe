@@ -1,0 +1,213 @@
+/*
+ * dely on: Tdrag.js
+ * DialogModule(id): return instance of id
+ * config: can multi configure
+ * 		id:
+ * 		title:
+ *		class:
+ * 		width,height: integer,defalt 400 320
+ * 		modal: true or false,default is true
+ * 		html: inside html string
+ * 		divDom: if divDom is null,auto created
+ * 		buttons: array,item:
+ * 				text: 
+ * 				click: function
+ * 		showClose: true or false,default true
+ * 		closeCallback: function
+ *		moved: true or false,default true
+ * set:
+ * 		append
+ * 		title
+ * 		open,close
+ * 		clear
+ * get:
+ */
+$(function(){
+	var jsPath = getJSPath("dialog.js");
+	$("<link>").attr(
+		{
+			rel: "stylesheet",
+			type: "text/css",
+			href: jsPath + "dialog.css"
+		}
+	).appendTo("head");
+});
+DialogModule.titleBarHeight = 40;
+DialogModule.border = 5;
+DialogModule.footerHeight = 60;
+DialogModule.reserveHeight = 28 + DialogModule.titleBarHeight +
+	DialogModule.border +
+	DialogModule.footerHeight;
+function DialogModule(id){
+	if (null != id && undefined != id){
+		if (null != DialogModules[id] && undefined != DialogModules[id])
+			return DialogModules[id];
+		else
+			return null;
+	}
+	this.name = "dialog";
+	this.para={};
+	this.para["title"]="";
+	this.para["width"]=400;
+	this.para["height"]=320;
+	this.para["modal"]=true;
+	this.para["showClose"]=true;
+	this.para["class"]="";
+	this.id = "";
+	this.parent = $('body');
+	this.maskDiv = null;
+	this.config = function(cfg){
+		$.extend(this.para,cfg);
+		if (null != this.para["id"] && undefined != this.para["id"]){
+			if (null != DialogModules[this.id] && undefined != DialogModules[this.id])
+				return DialogModules[this.id];
+			else{
+				this.id=this.para["id"];
+				DialogModules[this.id]=this;
+			}
+		}
+		return this;
+	};
+	this.render = function(){
+		this.initDom();
+		return this;
+	};
+	this.set = function(name,value){
+		if (name == "append"){
+			if (value instanceof Module){
+				this.content.append(value.mydom);
+			}else{
+				this.content.append(value);
+			}
+		}else if (name=="open"){
+			if (!this.mydom.is(":hidden"))
+				return;
+			this.mydom.css('top',(($(window).height() - this.mydom.outerHeight())/2 + $("body").scrollTop()) + 'px');
+			if (this.para["modal"]){
+				this.zIndex = DialogModule.zIndex;
+				DialogModule.zIndex += 2;
+				this.mydom.css('zIndex',this.zIndex);
+				if (!this.maskDiv){
+					this.maskDiv = $('<div class="dialog-mask"></div>');
+				}
+				this.maskDiv.css('zIndex',this.zIndex - 1);
+				$('body').append(this.maskDiv);
+				$('html,body').addClass('dialogModule-ovfHiden'); 
+			}
+			if (null == this.para["buttons"] || undefined == this.para["buttons"]){
+				this.footer.hide();
+				this.content.css("height",(this.para["height"] - 
+					(DialogModule.reserveHeight - DialogModule.footerHeight)) +"px")
+			}else{
+				this.content.css("height",this.para["height"] - DialogModule.reserveHeight +"px")
+				for(var i=0;i<this.para["buttons"].length;i++){
+					this.footer.find('.dlg-button').eq(i).text(this.para["buttons"][i].text);
+				}
+				this.footer.show();
+			}
+			this.mydom.show();
+		}else if (name=="close"){
+			this.mydom.hide();
+			if (this.maskDiv){
+				this.maskDiv.remove();
+			}
+			if (typeof this.para['closeCallback'] == "function"){
+				this.para['closeCallback']();
+			}
+			$('html,body').removeClass('dialogModule-ovfHiden'); 
+		}else if (name == "title"){
+			this.para["title"]= value;
+			this.title.html(value);
+		}else if (name == "clear"){
+			this.mydom.find('tbody tr').remove();
+		}else if (name == "destroy"){
+			if (null != this.mydom){
+				this.mydom.remove();
+				this.mydom = null;
+			}
+		}
+		return this;
+	};
+	
+	//inside function
+	this.initDom = function(){
+		if (null == this.mydom){
+			if (null == this.para["divDom"] && undefined == this.para["divDom"]){
+				this.mydom = $('<div></div>');
+				this.mydom.hide();
+				this.mydom.appendTo(this.parent);
+				if (this.id != '')
+					this.mydom.attr('id',this.id);
+			}else{
+				if(this.para["divDom"] instanceof jQuery){
+					this.mydom = this.para["divDom"];
+				}else{
+					this.mydom = $(this.para["divDom"]);
+				}
+			}
+			if ('' != this.para["class"])
+				this.mydom.addClass(this.para["class"]);
+			this.initDiv();
+		}
+		this.showAttr();
+	};
+	this.initDiv = function(){
+		this.mydom.addClass("DialogModule");
+		var $titleBar = $("<div class='dlg-titleBar'></div>");
+		this.title = $("<span class='dlg-title'>"+this.para["title"]+"</span>");
+		this.closeIcon = $("<div class='dlg-closeIcon'></div>");
+		this.closeIcon.bind('click',function(){
+			this.set("close");
+			}.bind(this)
+		);
+		$titleBar.append(this.title);
+		$titleBar.append(this.closeIcon);
+		this.mydom.append($titleBar);
+		if (false != this.para["moved"]){
+			this.mydom.Tdrag({
+				scope: this.mydom,
+				handle: $titleBar
+			},DialogModule.zIndex);
+		}
+		var $container = $("<div class='dlg-container'></div>");
+		this.content = $("<div class='dlg-content'></div>");
+		$container.append(this.content);
+		this.footer = $("<div class='dlg-footer'></div>");
+		$container.append(this.footer);
+		this.mydom.append($container);
+	};
+	this.showAttr=function(){
+		this.mydom.css("width",this.para["width"]+"px");
+		this.mydom.css("height",this.para["height"]+"px");
+		this.mydom.css("left",($(window).width() - this.para["width"])/2 + "px");
+		this.title.html(this.para["title"]);
+		if (this.para["showClose"])
+			this.closeIcon.show();
+		else
+			this.closeIcon.hide();
+		if (null != this.para["html"] && undefined != this.para["html"]){
+			this.content.html(this.para["html"]);
+		}
+		this.footer.html("");
+		if (null == this.para["buttons"] || undefined == this.para["buttons"]){
+			this.footer.hide();
+			this.content.css("height",(this.para["height"] - 
+				(DialogModule.reserveHeight - DialogModule.footerHeight)) +"px")
+		}else{
+			this.content.css("height",this.para["height"] - DialogModule.reserveHeight +"px")
+			for(var i=0;i<this.para["buttons"].length;i++){
+				var bt = new ButtonModule();
+				bt.config({
+					"content": this.para["buttons"][i].text,
+					"clickCallback": this.para["buttons"][i].click,
+					"class": "dlg-button"
+				});
+				bt.render(this.footer);
+			}
+			this.footer.show();
+		}
+	};
+}
+DialogModules={};
+DialogModule.zIndex = 5000;
+DialogModule.prototype = new Module();

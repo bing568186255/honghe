@@ -1,0 +1,23 @@
+@CHARSET "UTF-8";
+
+div.UploadFileModule{
+	display: inline-block;
+}
+span.UploadFileModule-btn{
+	display: inline-block;
+	border: 1px solid #aaa;
+	border-width: 1px;
+	color: #1c94c4;
+	font-weight: bold;
+	font-size: 1em;
+	padding: .3em 1em;
+	border-radius: 4px;
+	cursor: pointer;
+}
+span.UploadFileModule-btn:hover{
+	background: #eeeeff;
+	border: 1px solid #555;
+}
+div.UploadFileModule form input{
+	display:none;
+}

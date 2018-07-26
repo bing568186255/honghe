@@ -1,0 +1,146 @@
+package DragonNet.Dao;
+
+import java.io.Reader;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import com.ibatis.common.resources.Resources;
+import com.ibatis.sqlmap.client.SqlMapClient;
+import com.ibatis.sqlmap.client.SqlMapClientBuilder;
+
+public class DBOperate {
+	private static SqlMapClient sqlMapClient = null;
+	
+	// 读取配置文件
+	static{
+		try {
+			Reader reader = Resources.getResourceAsReader("SqlMapConfig.xml");
+			sqlMapClient = SqlMapClientBuilder.buildSqlMapClient(reader);
+			reader.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//读取位置信息
+	public static List<HashMap> getLocation(HashMap hm){
+		List<HashMap> hmList = null;
+		try {
+			hmList = (List<HashMap>)sqlMapClient.queryForList("getLocation",hm);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return hmList;		
+	}
+	//增加位置信息
+	public static boolean addLocation(HashMap hm){
+		boolean bRet = false;
+		try {
+			sqlMapClient.insert("insertLocation",hm);
+			bRet = true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}		
+		return bRet;
+	}
+	//修改位置信息
+	public static boolean updateLocation(HashMap hm){
+		boolean bRet = false;
+		try {
+			sqlMapClient.update("updateLocation",hm);
+			bRet = true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}		
+		return bRet;
+	}
+	
+	//读取周边配套信息
+	public static List<HashMap> getFacilities(HashMap hm){
+		List<HashMap> hmList = null;
+		try {
+			hmList = (List<HashMap>)sqlMapClient.queryForList("getFacilities",hm);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return hmList;		
+	}
+	//增加周边配套信息
+	public static Long addFacility(HashMap hm){
+		Long ret = null;
+		try {
+			ret = (Long)sqlMapClient.insert("insertFacility",hm);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}		
+		return ret;
+	}
+	//修改周边配套信息信息
+	public static boolean updateFacility(HashMap hm){
+		boolean bRet = false;
+		try {
+			sqlMapClient.update("updateFacility",hm);
+			bRet = true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}		
+		return bRet;
+	}
+	//删除周边配套信息
+	public static boolean delFacility(Long id){
+		boolean bRet = false;
+		try {
+			sqlMapClient.update("delFacility",id);
+			bRet = true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}		
+		return bRet;
+	}
+
+	//读取参考房价信息
+	public static List<HashMap> getHouses(HashMap hm){
+		List<HashMap> hmList = null;
+		try {
+			hmList = (List<HashMap>)sqlMapClient.queryForList("getHouses",hm);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return hmList;		
+	}
+	//增加参考房价信息
+	public static Long addHouse(HashMap hm){
+		Long ret = null;
+		try {
+			ret = (Long)sqlMapClient.insert("insertHouse",hm);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}		
+		return ret;
+	}
+	//修改参考房价信息
+	public static boolean updateHouse(HashMap hm){
+		boolean bRet = false;
+		try {
+			sqlMapClient.update("updateHouse",hm);
+			bRet = true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}		
+		return bRet;
+	}
+	//删除参考房价信息
+	public static boolean delHouse(Long id){
+		boolean bRet = false;
+		try {
+			sqlMapClient.update("delHouse",id);
+			bRet = true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}		
+		return bRet;
+	}
+}

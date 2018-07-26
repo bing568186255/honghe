@@ -1,0 +1,9 @@
+INDEX VERSION 1.126
+Z:\sharePath\rovsky\massif\massif\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\1431389312.index
+\manager\src
+Z:\sharePath\RFID\rfidmanage\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\1431389312.index
+\manager\src
+Z:\work\model\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\1431389312.index
+\manager\src
+Z:\work\kunming\GIS\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\1431389312.index
+\manager\src

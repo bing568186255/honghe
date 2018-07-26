@@ -1,0 +1,147 @@
+/*
+ * rely on:
+ * 		module labelinput
+ * config:
+ * 		title
+ * 		checkimg: checkimg url
+ * 		formbkimg: form background image url
+ * 		callback: login callback function
+ * set:
+ * 		changeCheckImg: replace check image
+ * get:
+ * 		commit: commit form and callback
+ */
+$(function(){
+	var jsPath = getJSPath("pagelogin.js");
+	$("<link>").attr(
+		{
+			rel: "stylesheet",
+			type: "text/css",
+			href: jsPath + "pagelogin.css"
+		}
+	).appendTo("head");
+});
+function PageloginModule(){
+	this.name = "pagelogin";
+	this.parent = $('body');
+	this.index = PageloginModule.number; 
+	PageloginModules.push(this);
+	PageloginModule.number ++;
+	this.para={};
+	this.config = function(cfg){
+		this.para=cfg;
+		if (null != this.para["id"] && undefined != this.para["id"])
+			this.id=this.para["id"];
+	};
+	this.initDom = function(dom){
+		if (null != this.mydom)
+			return;
+		var $html=$('<div class="PageloginModule">');
+		if (this.id != '')
+			$html.attr('id',this.id);
+		$html.append("<H1 class='title'>"+this.para["title"]+"</H1>");
+		var $form=$("<form></form>");
+		if (this.para["formbkimg"]>''){
+			$form.css("background","url("+this.para["formbkimg"]+")");
+		}
+		$form.attr('action','javascript:PageloginModule.login('+this.index+')');
+		var $divLine = $('<div class="line"></div>');
+		var userName = new LabelinputModule();
+		userName.config({"label":"用 户 名","name":"username"}).render($divLine);
+		$form.append($divLine);
+		$divLine = $('<div class="line"></div>');
+		var labelInput = new LabelinputModule();
+		labelInput.config({"label":"密 码","name":"password","type":"password"}).render($divLine);
+		$form.append($divLine);
+		if (null != this.para["checkimg"] && undefined != this.para["checkimg"]
+			&& this.para["checkimg"] > ''){
+			$divLine = $('<div class="line"></div>');
+			labelInput = new LabelinputModule();
+			labelInput.config({"label":"验 证 码","name":"checkcode",
+				"class":"imgcheck","inputWidth":0}).render($divLine);
+			var style = "";
+			$divLine.append(
+					'<div class="checkimg"><table><tr><td>'
+					+'<img class="checkimg" '+style+' src="'+this.para["checkimg"]+'" border=0> ' +
+						'<a href="javascript:PageloginModule.loadimage('+this.index+');">换一张</a>'
+					+'</td></tr></table></div>'
+			);
+			$form.append($divLine);
+		}
+		$form.append(
+			'<div>' +
+				'<input type="submit"  value="登&nbsp;&nbsp;&nbsp;录"/>' +
+			'</div>'
+		);
+		$html.append($form);
+		this.setParent(dom);
+		$html.hide();
+		$html.appendTo(this.parent);
+		this.mydom = $html;
+		
+		var resizeFun = function onResize(){
+			if (null == this.mydom)
+				return;
+//			if (this.parent.find('img.checkimg').length == 0 ||
+//				$(window).width() == this.mydom.outerWidth()){
+//				//the element is not loaded completely
+//				this.mydom.hide();
+//				setTimeout(function(){
+//					this.mydom.show();
+//					$(window).resize();
+//				}.bind(this),10);
+//				return;
+//			}
+//			this.mydom.css({ 
+//		        left: ($(window).width() - this.mydom.outerWidth())/2, 
+//		        top: ($(window).height() - this.mydom.outerHeight())/3
+//		    });
+			this.mydom.css({ 
+		        left: ($(window).width() - 380)/2, 
+		        top: ($(window).height() - 320)/3
+		    });
+			this.mydom.show();
+		}.bind(this);
+		$(window).resize(resizeFun);
+		//setTimeout(function(){
+			$(window).resize();
+		//}.bind(this),10);
+	};
+	this.render = function(dom){
+		this.initDom(dom);
+		if (null == this.mydom)
+			return;
+		setTimeout(function(){
+			this.mydom.find('input[name=username]').focus();
+		}.bind(this),50);
+	};
+	this.set = function(name,value){
+		if ('changeCheckImg' == name)
+			this.mydom.find('img.checkimg').attr('src',value);
+	};
+	this.get = function(name){
+		if ('commit' == name){
+			if ($.trim(this.mydom.find('input[name=username]').val())==""){
+				showError("请输入用户名");
+				return;
+			}
+			var	data = this.mydom.find('form').serialize();
+			if ("function" == typeof this.para["callback"])
+				this.para["callback"](data);
+		}
+	};
+}
+PageloginModule.login=function(index){
+	if (index >= PageloginModule.number)
+		return;
+	PageloginModules[index].get("commit");
+};
+PageloginModule.loadimage=function(index){
+	if (index >= PageloginModule.number)
+		return;
+	var nowtime = new Date();
+	PageloginModules[index].set("changeCheckImg","checkimg.html?"+nowtime.getTime());
+};
+PageloginModule.number = 0;
+PageloginModules=[];
+PageloginModule.prototype = new Module();

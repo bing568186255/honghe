@@ -1,0 +1,226 @@
+/*
+ * config:
+ *		topHeight:			default 60
+ *		menuWidth:			default 200, no menu if set 0
+ *		noIframe:			default false, not use iframe
+ *		bottomHeight:		default auto，recommend set
+ *		allowHideMenu:  	allow or forbid left menu to be hidden,default false
+ *		showFrameBorder:	show or hide frame border line, default true
+ *		frameBorderWidth:	default 1
+ *		backgroundColor: 	default #fff
+ *		bottomBGColor:		bottom background color,default #f2f2f2
+ *		borderColor: 		border color, default #d7d7d7
+ *		topBackground:		
+ *		menuBackground:		
+ * set:
+ *		appendTop
+ *		appendMenu
+ *		appendBottom
+ *		contentUrl
+ * get:
+		contentUrl
+ */
+$(function(){
+	var jsPath = getJSPath("mainframe.js");
+	$("<link>").attr(
+		{
+			rel: "stylesheet",
+			type: "text/css",
+			href: jsPath + "mainframe.css"
+		}
+	).appendTo("head");
+});
+function MainframeModule(){
+	this.BORDERSIZE = 1;
+	this.MENUSLIPWIDTH = 10;
+	this.name = "mainframe";
+	this.parent = $('body');
+	this.top = null;
+	this.main = null;
+	this.menu = null;
+	this.menuContent = null;
+	this.divIframe = null;
+	this.iframe = null;
+	this.bottom = null;
+	this.hidemenu = null;
+	this.menushow = true;
+	this.para={};
+	this.config = function(cfg){
+		this.para["allowHideMenu"]=false;
+		this.para["showFrameBorder"]=true;
+		this.para["topHeight"]=60;
+		this.para["menuWidth"]=200;
+		this.para["bottomHeight"]= "auto";
+		this.para["backgroundColor"]="";
+		this.para["bottomBGColor"]="";
+		this.para["borderColor"]="";
+		$.extend(this.para,cfg);
+		if (null != this.para["id"] && undefined != this.para["id"])
+			this.id=this.para["id"];
+		if (null != this.para["frameBorderWidth"] && undefined != this.para["frameBorderWidth"])
+			this.BORDERSIZE=this.para["frameBorderWidth"];
+		return this;
+	};
+	this.initDom = function(){
+		if (null != this.mydom)
+			return;
+		this.mydom = $("<div class='MainframeModule'></div>");
+		if (this.id != '')
+			this.mydom.attr('id',this.id);
+		if ('' != this.para["backgroundColor"])
+			this.mydom.css("backgroundColor",this.para["backgroundColor"]);
+		
+		//top
+		this.top = $("<div class='Mainframe-top'></div>");
+		this.top.css('height',this.para["topHeight"]);
+		if (this.para["showFrameBorder"]){
+			this.top.css('borderBottomWidth',this.BORDERSIZE);
+		}else{
+			this.top.css('borderWidth','0px');
+		}
+		if ('' != this.para["borderColor"])
+			this.top.css("borderColor",this.para["borderColor"]);
+		if (null != this.para["topBackground"] && undefined != this.para["topBackground"]){
+			this.top.css('background',this.para["topBackground"]);
+			this.top.css('background-size','100% 100%');
+		}
+		this.mydom.append(this.top);
+		
+		//main
+		this.main = $("<div class='Mainframe-main'></div>");
+		this.main.css('top',this.para["topHeight"] + this.BORDERSIZE);
+		if ('auto' != this.para["bottomHeight"]){
+			this.main.css('bottom',this.para["bottomHeight"]);			
+		}
+		
+		//menu
+		if (this.para["menuWidth"] > 0){
+			this.menu = $("<div class='Mainframe-menu'></div>");
+			this.menu.css('width',this.para["menuWidth"]);
+			if (this.para["showFrameBorder"] && !this.para["allowHideMenu"]){
+				this.menu.css('borderWidth',this.BORDERSIZE);
+			}else{
+				this.menu.css('borderWidth','0px');
+			}
+			if ('' != this.para["borderColor"])
+				this.menu.css("borderColor",this.para["borderColor"]);
+			if (null != this.para["menuBackground"] && undefined != this.para["menuBackground"]){
+				this.menu.css('background',this.para["menuBackground"]);
+			}else if ('' != this.para["backgroundColor"]){
+				this.menu.css("backgroundColor",this.para["backgroundColor"]);
+			}
+			this.menuContent = $("<div class='Mainframe-menuContent'></div>")
+			if (this.para["allowHideMenu"]){
+				this.menuContent.css('width',this.para["menuWidth"] - 10);
+				//allow hide menu
+				var menuhide = $("<div class='Mainframe-menuhide'></div>");
+				this.hidemenu = $('<div class="menuShow"></div>');
+				this.hidemenu.bind('click',function(){
+					this.clickHideMenu();
+				}.bind(this));
+				menuhide.append(this.hidemenu);
+				this.menu.append(menuhide);
+			}
+			this.menu.append(this.menuContent);
+			this.main.append(this.menu);
+		}
+		
+		this.divIframe = $("<div class='Mainframe-iframe'></div>");
+		//iframe
+		if (true != this.para["noIframe"]){
+			this.iframe = $("<iframe id='Mainframe-iframe' class='Mainframe-iframe' frameborder='no' border='0' src=''></iframe>");
+			this.divIframe.append(this.iframe);
+		}
+		this.divIframe.css('marginLeft',this.para["menuWidth"] + this.BORDERSIZE);
+		this.main.append(this.divIframe);
+		this.mydom.append(this.main);
+		
+		//bottom
+		if ('auto' == this.para["bottomHeight"] || this.para["bottomHeight"] > 0){
+			this.bottom = $("<div class='Mainframe-bottom'></div>");
+			if ('auto' != this.para["bottomHeight"]){
+				this.bottom.css('height',this.para["bottomHeight"]);			
+				this.bottom.css('lineHeight',this.para["bottomHeight"]);			
+			}
+			if (this.para["showFrameBorder"]){
+				this.bottom.css('borderTopWidth',this.BORDERSIZE);
+			}else{
+				this.bottom.css('borderWidth','0px');
+			}
+			if ('' != this.para["bottomBGColor"])
+				this.bottom.css("backgroundColor",this.para["bottomBGColor"]);
+			if ('' != this.para["borderColor"])
+				this.bottom.css("borderColor",this.para["borderColor"]);
+			this.mydom.append(this.bottom);
+		}
+	};
+	this.clickHideMenu = function(){
+		if (this.menushow){
+			this.menu.animate({ left: -this.para["menuWidth"] + this.MENUSLIPWIDTH}, function () {
+				this.hidemenu.removeClass('menuShow');
+				this.hidemenu.addClass('menuHide');
+				this.iframe.parent().css('marginLeft',this.MENUSLIPWIDTH);
+			}.bind(this));
+		}else{
+			this.menu.animate({ left: 0}, function () {
+				this.hidemenu.removeClass('menuHide');
+				this.hidemenu.addClass('menuShow');
+				this.iframe.parent().css('marginLeft',this.para["menuWidth"]);
+			}.bind(this));
+		}
+		this.menushow = !this.menushow;
+	};
+	this.render = function(){
+		this.initDom();
+		if (null == this.mydom)
+			return;
+		this.mydom.appendTo(this.parent);
+		if ('auto' == this.para["bottomHeight"]){
+			setTimeout(function(){
+				var btHeight = this.bottom.outerHeight();
+				this.main.css('bottom',btHeight);
+			}.bind(this),500);
+		}
+		return this;
+	};
+	this.set = function(name,value){
+		if (name == "appendTop"){
+			if (value instanceof Module){
+				this.top.append(value.mydom);
+			}else{
+				this.top.append(value);
+			}
+		}else if (name == "appendMenu"){
+			if (null == this.menuContent)
+				return;
+			if (value instanceof Module){
+				this.menuContent.append(value.mydom);
+			}else{
+				this.menuContent.append(value);
+			}
+		}else if (name == "appendBottom"){
+			if (this.bottom){
+				if (value instanceof Module){
+					this.bottom.append(value.mydom);
+				}else{
+					this.bottom.append(value);
+				}
+			}
+		}else if (name == "contentUrl"){
+			this.iframe.attr('src',value);
+		}else if (name == "contentDom"){
+			this.divIframe.html('');
+			if (value instanceof Module){
+				value.mydom.appendTo(this.divIframe);
+			}else{
+				value.appendTo(this.divIframe);
+			}
+		}
+		return this;
+	};
+	this.get=function(name){
+		if (name=="contentUrl")
+			return this.iframe.attr('src');
+	};
+}
+MainframeModule.prototype = new Module();

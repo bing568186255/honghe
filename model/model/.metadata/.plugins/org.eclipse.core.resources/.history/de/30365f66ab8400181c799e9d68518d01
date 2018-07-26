@@ -1,0 +1,64 @@
+@CHARSET "UTF-8";
+
+div.DatagridModule{
+	position: relative;
+	height: 100%;
+	min-height: 60px;
+}
+div.DatagridModule table.DatagridModule-show{
+	text-align: center;
+	border:1px solid #DDDDDD;
+	width: 100%;
+}
+div.DatagridModule table.DatagridModule-show thead tr{
+	background: url(sgrid-bg.gif);
+}
+
+div.DatagridModule table.DatagridModule-show th{
+	height: 30px;
+	border:1px solid #DDDDDD;
+}
+div.DatagridModule table.DatagridModule-show td{
+	border:1px solid #DDDDDD;
+}
+div.DatagridModule table.DatagridModule-show td.edittd{
+	position: relative;
+}
+div.DatagridModule table.DatagridModule-show td.edittd input.tdeditinput{
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	border: 2px solid #66CCFF;
+}
+div.DatagridModule table.DatagridModule-show tbody tr{
+	height:30px;
+}
+div.DatagridModule table.DatagridModule-show tbody tr.odd{
+	background: #F0F0FF;
+}
+div.DatagridModule table.DatagridModule-show tbody tr:hover{
+	background: #DDDDFF;
+}
+div.DatagridModule table.DatagridModule-show tbody tr.selected{
+	background: #C0C0FF;
+}
+
+div.DatagridModule div.DatagridModule-ctrl{
+	margin-top: 15px;
+}
+div.DatagridModule div.DatagridModule-ctrl div.DatagridModule-ctrl-left{
+	float: left;
+}
+div.DatagridModule div.DatagridModule-ctrl div.DatagridModule-ctrl-right{
+	float: right;
+}
+div.DatagridModule div.DatagridModule-ctrl select{
+	font-size:16px;
+}
+div.DatagridModule div.DatagridModule-ctrl .pagenum{
+	margin-left: 8px;
+	margin-right: 3px;
+}
+div.DatagridModule div.DatagridModule-ctrl a{
+	margin-left: 5px;
+}

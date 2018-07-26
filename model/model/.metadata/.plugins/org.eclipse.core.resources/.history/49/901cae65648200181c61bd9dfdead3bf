@@ -1,0 +1,531 @@
+
+var g_amapInitParam={};		//	{type,show,no3dlayer,defaultSatellite,showName,domIDName,clickfun,complete,
+							//	 extTool:[{name,fun,active:true/false},...] }
+var g_map = null;
+var g_mouseTool = null;			//鼠标画线或多边形工具
+var g_geocoder = null;			//坐标与地址转换
+var g_satelliteLayer = null;
+var g_object3Dlayer = null;
+var g_trafficLayer = null;
+var g_rangingTool= null;
+var g_drawCompleteFun = null;
+var g_ptInfoWindow = null;		//位置信息窗口
+
+function amapinit(param){
+	g_amapInitParam = param;
+	if (g_amapInitParam.type != "2D") g_amapInitParam.type="3D";
+	if (g_amapInitParam.show != "depart") g_amapInitParam.show = "satelite";
+	$.getScript("http://webapi.amap.com/maps?v=1.4.6&key=c011737418260d7eb39ecb9e73ef638e&plugin=AMap.RangingTool").done(amapJSLoaded);
+}
+
+function amapJSLoaded(){
+	var features=['bg','road'];
+	if (false != g_amapInitParam.showName){
+		features.push('point');
+	}
+	if (g_amapInitParam.type != "3D"){
+	    g_map = new AMap.Map(g_amapInitParam.domIDName,{
+	    	expandZoomRange:true,
+	        resizeEnable: true,
+			rotateEnable:true,
+	    	buildingAnimation:true,
+	    	features:features,
+	        zoom: 8,		//15
+	        center: [102.664672,25.005059]
+	    });
+		if (g_amapInitParam.clickfun){
+			g_map.on('click',amapClick);
+		}
+	}else{
+	    g_map = new AMap.Map(g_amapInitParam.domIDName,{
+			pitch:65,
+	    	viewMode:'3D',
+	    	expandZoomRange:true,
+	        resizeEnable: true,
+			rotateEnable:true,
+	    	pitchEnable:true,
+	    	buildingAnimation:true,
+	    	features:features,
+	        zoom: 11,
+	        center: [102.839337,24.886456],
+	    });
+
+		AMap.plugin('AMap.ControlBar',function(){
+			g_map.addControl(
+				new AMap.ControlBar({
+			    	showZoomBar:false,
+			    	showControlButton:true,
+			    	position:{
+			    		right:'10px',
+			    		bottom:'0px'
+			    	}
+		  		})
+		  	);
+		});
+		if (true != g_amapInitParam.no3dlayer){
+			AMap.plugin('Map3D',function(){
+				g_object3Dlayer = new AMap.Object3DLayer({zIndex: 500});
+			    g_map.add(g_object3Dlayer);
+			});
+		}
+	}
+ 	g_satelliteLayer = new AMap.TileLayer.Satellite({zIndex: 8});
+ 	if (true == g_amapInitParam.defaultSatellite){
+ 		g_map.add(g_satelliteLayer);
+ 	}
+    g_map.on("complete",function(){
+	    $('a.amap-logo').css({'width':'0px','display':'none','visibility':'hidden'});
+	    $('div.amap-copyright').css('width','0px');
+	    $('div.amap-copyright').css('visibility','hidden');
+	    if (g_amapInitParam.complete){
+	    	g_amapInitParam.complete();
+	    }
+
+	   	addTools();
+
+		//$('div.amap-overlays').bind('DOMNodeInserted', function(e) { 
+		//	alert('element now contains: ' + $(e.target).html()); 
+		//}); 	    
+	});
+
+	AMap.plugin('AMap.MouseTool',function(){
+		g_mouseTool = new AMap.MouseTool(g_map);
+	});
+	AMap.plugin('AMap.Geocoder',function(){
+		g_geocoder = new AMap.Geocoder({
+			radius: 50,
+			batch: false
+		});
+	});
+}
+
+function amapClick(e){
+	if (null == g_amapInitParam.clickfun)
+		return;
+	var pt = [e.lnglat.getLng(),e.lnglat.getLat()];
+	if (null == g_geocoder){
+		g_amapInitParam.clickfun(pt);
+	}else{
+		g_geocoder.getAddress(new AMap.LngLat(pt[0],pt[1]),function(status,result){
+			var formatAddress = null;
+			if (status === 'complete' && result.info === 'OK') {
+				formatAddress = result.regeocode.formattedAddress;
+			}
+			g_amapInitParam.clickfun(pt,formatAddress);
+		});
+	}
+}
+
+function addTools(){
+	var html=[];
+	html.push('<div id="layerbox" class="layerbox usel" style="right: 10px; top: 15px; display: block;">');
+	html.push(' <div id="layerbox_item">');
+	html.push('  <div class="show-list">');
+	
+	if (null != g_amapInitParam.extTool){
+		for(var i=0;i<g_amapInitParam.extTool.length;i++){
+			html.push('   <a class="layer_item ext item');
+		 	if (true == g_amapInitParam.extTool.ative){
+		 		html.push(' active');
+		 	}
+			html.push('" data-type="'+i+'" href="javascript:void(0)">');
+			html.push('    <span class="icon"> <i class="iconfont"></i> </span>');
+			html.push('    <span class="name">'+g_amapInitParam.extTool[i].name+'</span>');
+			html.push('   </a>');
+		}
+	}
+	
+	html.push('   <a class="layer_item satellite item');
+ 	if (true == g_amapInitParam.defaultSatellite){
+ 		html.push(' active');
+ 	}
+	html.push('" data-type="satellite" href="javascript:void(0)">');
+	html.push('    <span class="icon"> <i class="iconfont icon-satellite"></i> </span>');
+	html.push('    <span class="name">卫星图</span>');
+	html.push('   </a>');
+	
+	html.push('   <a class="layer_item poiname item');
+	if (false != g_amapInitParam.showName){
+ 		html.push(' active');
+	}
+	html.push('" data-type="poiname" href="javascript:void(0)">');
+	html.push('    <span class="icon"> <i class="iconfont icon-poiname"></i> </span>');
+	html.push('    <span class="name">地名</span>');
+	html.push('   </a>');
+	html.push('   <a class="layer_item traffic item" data-type="traffic" href="javascript:void(0)">');
+	html.push('    <span class="icon"> <i class="iconfont icon-traffic"></i> </span>');
+	html.push('    <span class="name">路况</span>');
+	html.push('   </a>');
+	html.push('   <a class="layer_item ranging item" data-type="ranging" href="javascript:void(0)">');
+	html.push('    <span class="icon"> <i class="iconfont icon-ranging"></i> </span>');
+	html.push('    <span class="name">测距</span>');
+	html.push('   </a>');
+	html.push('   <a class="layer_item measure item " data-type="measure" href="javascript:void(0)">');
+	html.push('    <span class="icon"> <i class="iconfont icon-measure"></i> </span>');
+	html.push('    <span class="name">测面积</span>');
+	html.push('   </a>');
+	html.push('  </div>');
+	html.push(' </div>');
+	html.push('</div>');
+	$('body').append(html.join(''));
+	$('#layerbox_item a.layer_item').click(function(){
+		var dataType = $(this).attr('data-type');
+		var isExt = $(this).hasClass('ext');
+		var active = $(this).hasClass('active');
+		if (active){
+			$(this).removeClass('active');
+		}else{
+			$(this).addClass('active');
+		}
+		layerItemClick(isExt,dataType,!active);
+	});
+}
+
+function layerItemClick(isExt,dataType,active){
+	if (!isExt && dataType == 'satellite'){
+		if (active){
+			g_map.add(g_satelliteLayer);
+		}else{
+			g_map.remove(g_satelliteLayer);
+		}
+	}else if (!isExt && dataType == 'poiname'){
+		if (active){
+			g_map.setFeatures(['bg','road','point']);
+		}else{
+			g_map.setFeatures(['bg','road']);
+		}
+	}else if (!isExt && dataType == 'traffic'){
+		if (active){
+			if (null == g_trafficLayer){
+			    g_trafficLayer = new AMap.TileLayer.Traffic({zIndex: 190});
+			    g_trafficLayer.setMap(g_map);
+			}
+			g_trafficLayer.show();
+		}else{
+			if (g_trafficLayer)
+				g_trafficLayer.hide();
+		}
+	}else if (!isExt && dataType == 'ranging'){
+		if (active){
+			$('#layerbox_item a.layer_item.measure').removeClass('active');
+		    if (g_mouseTool){
+		    	g_mouseTool.close();
+		    }
+			if (null == g_rangingTool){
+		        g_rangingTool = new AMap.RangingTool(g_map);
+		    }
+		    g_rangingTool.turnOn();
+		}else{
+			if(g_rangingTool){
+				g_rangingTool.turnOff();
+			}
+		}
+	}else if (!isExt && dataType == 'measure'){
+		if (active){
+			$('#layerbox_item a.layer_item.ranging').removeClass('active');
+			if (null != g_rangingTool){
+		    	g_rangingTool.turnOff();
+		    }
+		    if (g_mouseTool){
+				g_mouseTool.on("draw",measureDraw);
+				if (g_amapInitParam.clickfun){
+					g_map.off('click',amapClick);
+				}
+				g_mouseTool.polygon();
+		    }
+		}else{
+		    if (g_mouseTool){
+		    	g_mouseTool.close();
+		    }
+		    for(var x in g_measurePolygons){
+				g_map.remove(g_measurePolygons[x]);
+				g_map.remove(g_measureText[x]);
+				delete g_measurePolygons[x];
+				delete g_measureText[x];
+			}
+			g_measurePolygons=[];
+		}
+	}else if (isExt){
+		var index = parseInt(dataType);
+		if (!isNaN(index)){
+			if (null != g_amapInitParam.extTool[index].fun){
+				g_amapInitParam.extTool[index].fun(active);
+			}
+		}
+	}
+}
+
+var g_measurePolygons=[];
+var g_measureText=[];
+function measureDraw(param){
+	if (g_amapInitParam.clickfun && g_amapInitParam.type != "3D"){
+		g_map.on('click',amapClick);
+	}
+	var polygon= param.obj;
+	polygon.setOptions({bubble: false});
+	var measure = parseInt(polygon.getArea());
+	var pts = polygon.getPath();
+	var center=[0,0];
+	for(var i=0;i<pts.length;i++){
+		center[0] += pts[i].getLng();
+		center[1] += pts[i].getLat();
+	}
+	center[0] = center[0] / pts.length;
+	center[1] = center[1] / pts.length;
+	var index =center[0]+''+center[1];
+	g_measurePolygons[index]=polygon;
+
+	g_measureText[index] = new AMap.Text({
+        text:'面积：'+measure+'平方米 '+'<span onclick="closeMeasurePolygons(\''+index+'\')">×</span>',
+        textAlign:'center', // 'left' 'right', 'center',
+        verticalAlign:'middle', //middle 、bottom
+        draggable:false,
+        cursor:'pointer',
+        style:{
+            'background-color':'white',
+            'border':'solid 1px #0088ff',
+            'padding':'3px 5px'
+        },
+        bubble: false,
+        position: center
+    });
+    g_measureText[index].setMap(g_map);
+}
+function closeMeasurePolygons(index){
+	if (g_measurePolygons[index]){
+		g_map.remove(g_measurePolygons[index]);
+		g_map.remove(g_measureText[index]);
+		delete g_measurePolygons[index];
+		delete g_measureText[index];
+	}
+}
+
+function showInfoWindow(pt,html,offset){
+	var option = {
+		closeWhenClickMap: true,
+    	content: html
+	};
+	if (null != offset && typeof offset != 'undefined'){
+		option.offset = offset;
+	}
+	g_ptInfoWindow = new AMap.InfoWindow(option);
+	g_ptInfoWindow.open(g_map, pt);
+}
+function closeInfoWindow(e){
+	if (null != g_ptInfoWindow){
+		g_ptInfoWindow.close();
+	}
+	//$('div.amap-overlays').html('');
+}
+function clickInfoWindow(e){
+	e.stopPropagation();
+	e.preventDefault();
+	return false;
+}
+
+function startDraw(type,callback){
+	if (null == g_mouseTool)
+		return;
+	g_drawCompleteFun = callback;
+	if (g_amapInitParam.clickfun){
+		g_map.off('click',amapClick);
+	}
+	if (type == "polygon"){
+		var preCursor = g_map.getDefaultCursor();
+		g_mouseTool.on("draw",function(param){
+			this.close();
+			if (g_amapInitParam.clickfun && g_amapInitParam.type != "3D"){
+				g_map.on('click',amapClick);
+			}
+			if (g_drawCompleteFun){
+				g_drawCompleteFun(param.obj);
+			}
+			g_mouseTool.off("draw");
+			g_map.setDefaultCursor('preCursor');
+		});
+		g_map.setDefaultCursor('pointer');
+		g_mouseTool.polygon();
+	}
+}
+function endDraw(){
+	g_mouseTool.close();
+}
+//两点距离
+function get2PointLenth(x,y){
+	return AMap.GeometryUtil.distance(new AMap.LngLat(x[0],x[1]),new AMap.LngLat(y[0],y[1]));
+	//return Math.sqrt((x[0] - y[0]) * (x[0] - y[0]) + (x[1] - y[1])*(x[1] - y[1]));
+}
+//根据三边长度计算三角形面积
+function getTriangleArea(a,b,c){
+	var p= (a+b+c)/2;
+	return Math.sqrt(p*(p-a)*(p-b)*(p-c));
+}
+//获取多边形中心点
+function getCenter(polygon){
+	if (!(polygon instanceof Array)){
+		return null;
+	}
+	if(polygon.length < 3)
+		return null;
+	var isPoint = false;
+	if (polygon[0] instanceof Array){
+		isPoint = true;
+	}
+	var center=[0.0,0.0];
+	var s = 0.0;
+	//以每个三角形面积加权计算
+	var point=[];
+	if (isPoint){
+		point[0]=polygon[0];
+	}else{
+		point[0]=[polygon[0].lng,polygon[0].lat];
+	}
+	for(var i=0;i<polygon.length - 2;i++){
+		if (isPoint){
+			point[1]=polygon[i+1];
+			point[2]=polygon[i+2];
+		}else{
+			point[1]=[polygon[i+1].lng,polygon[i+1].lat];
+			point[2]=[polygon[i+2].lng,polygon[i+2].lat];
+		}
+		var a = get2PointLenth(point[0],point[1]);
+		var b = get2PointLenth(point[1],point[2]);
+		var c = get2PointLenth(point[2],point[0]);
+		var curS = getTriangleArea(a,b,c);		//三角形面积
+		//三角形中心
+		var curCenter = [(point[0][0] + point[1][0] + point[2][0])/3, (point[0][1] + point[1][1] + point[2][1])/3];
+		if (s < 0.0000001){
+			s = curS;
+			center = curCenter;
+		}else{
+			/*
+			k = curS / s;
+			center[0] = (center[0] + k*curCenter[0])/(1+k);
+			center[1] = (center[1] + k*curCenter[1])/(1+k);
+			*/
+			var k = curS/(s+curS);
+			center[0] += (curCenter[0] - center[0])*k;
+			center[1] += (curCenter[1] - center[1])*k;
+         	s += curS;
+		}
+	}
+	return center;
+}
+//把多边形转换为点的数组字符串
+function getPolygonPtList(polygon){
+	var polygonStr=[];
+	polygonStr.push("[");
+	var pts = polygon.getPath();
+	for(var i=0;i<pts.length;i++){
+		if (i>0)
+			polygonStr.push(",");
+		polygonStr.push("[");
+		polygonStr.push(pts[i].getLng());
+		polygonStr.push(",");
+		polygonStr.push(pts[i].getLat());
+		polygonStr.push("]");
+	}
+	polygonStr.push("]");
+	return polygonStr.join('');
+}
+//计算点与多点形最近的距离，米为单位
+function calcPointToPolygon(pt,polygon){
+	var point = new AMap.LngLat(pt[0],pt[1]);
+	var pts = polygon.getPath();
+	var minDist1 = -1; minDist2 = -1;
+	var minPt1,minPt2;
+	for(var i=0;i<pts.length;i++){
+		var newDist = AMap.GeometryUtil.distance(point,pts[i]);
+		if (-1 == minDist1){
+			minDist1 = newDist;
+			minPt1 = pts[i];
+		}else if (-1==minDist2){
+			minDist2 = newDist;
+			minPt2 = pts[i];
+		}else{
+			var newPt = pts[i];
+			if (newDist < minDist1){
+				var temp = minDist1;
+				minDist1 = newDist;
+				newPt = minPt1;
+				minPt1 = pts[i];
+				newDist = temp;
+			}
+			if (newDist < minDist2){
+				minDist2 = newDist;
+				minPt2 = newPt;
+			}
+		}
+	}
+	var dist = parseInt(AMap.GeometryUtil.distanceToLine(point,[minPt1,minPt2]));
+	return dist;
+}
+
+//添加多边形柱体
+function addRegularPrism(point,segment,height,radius,color,text){
+	var center = g_map.lngLatToGeodeticCoord(point);
+    var cylinder = new AMap.Object3D.MeshAcceptLights();
+    var geometry = cylinder.geometry;
+    var verticesLength = segment*2;
+    var path  = []
+    for(var i = 0;i< segment ;i += 1){
+        var angle = 2*Math.PI*i/segment;
+        var x = center.x +Math.cos(angle)*radius;
+        var y = center.y +Math.sin(angle)*radius;
+        path.push([x,y]);
+        // debugger
+        geometry.vertices.push(x,y,0);//底部顶点
+        geometry.vertices.push(x,y,-height);//顶部顶点
+
+        geometry.vertexColors.push.apply(geometry.vertexColors, color)//底部颜色
+        geometry.vertexColors.push.apply(geometry.vertexColors, color)//顶部颜色
+
+        var nX = Math.cos(angle);
+        var nY = Math.sin(angle)
+        geometry.vertexNormals.push(nX,nY,0)//侧面顶点法向量
+        geometry.vertexNormals.push(nX,nY,0)
+
+        var bottomIndex = i * 2;
+        var topIndex = bottomIndex + 1;
+        var nextBottomIndex = (bottomIndex + 2) % verticesLength;
+        var nextTopIndex = (bottomIndex + 3) % verticesLength;
+
+        geometry.faces.push(bottomIndex, topIndex, nextTopIndex)//侧面三角形1
+        geometry.faces.push(bottomIndex, nextTopIndex, nextBottomIndex)//侧面三角形2
+    }
+    //构建顶面三角形,一样的颜色,但是法向量不一样，所以需要独立的顶点
+    for(var i = 0;i< segment;i += 1){
+        geometry.vertices.push.apply(geometry.vertices,geometry.vertices.slice(i*6+3,i*6+6));//底部顶点
+        geometry.vertexColors.push.apply(geometry.vertexColors, color)
+        geometry.vertexNormals.push(0,0,-1)//顶面顶点法向量
+    }
+    var triangles = AMap.GeometryUtil.triangulateShape(path);
+    var offset = segment*2;
+    for (var v = 0; v < triangles.length; v += 3) {
+        geometry.faces.push(triangles[v]+offset, triangles[v + 2]+offset, triangles[v + 1]+offset)
+    }
+    cylinder.transparent = true;//如果使用了透明颜色，请设置true
+    g_object3Dlayer.add(cylinder);
+
+    if(typeof text != "undefined" && text.length>0){
+		new AMap.Text({
+			text: text,
+			position: point,
+			height: height,
+			verticalAlign:'bottom',
+	        textAlign:'center',
+	        draggable:false,
+	        //cursor:'pointer',
+	        style:{
+	            'background':'transparent',
+ 	           'border':'none',
+ 	           'color':'white',
+	            'padding':'0px 0px',
+	            'font-size': '8px'
+	        },
+	        bubble: true,
+			map: g_map
+		});    	
+    }
+    return cylinder;
+};

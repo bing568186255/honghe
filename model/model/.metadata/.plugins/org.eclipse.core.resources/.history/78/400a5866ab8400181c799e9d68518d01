@@ -1,0 +1,91 @@
+/*
+ * config:
+ *		title:	default 查询条件
+ * 		cols:	col number, default 3
+ *		rows:	row number, default 2
+ * set:
+ * 		item:	{row: 0, col: 0, name: "name", dom: dom}
+ * get:
+ * 		serializeValue
+ */
+$(function(){
+	var jsPath = getJSPath("condgroup.js");
+	$("<link>").attr(
+		{
+			rel: "stylesheet",
+			type: "text/css",
+			href: jsPath + "condgroup.css"
+		}
+	).appendTo("head");
+});
+function CondgroupModule(){
+	this.name = "condgroup";
+	this.para={"title":"查询条件","cols":3,"rows":2};
+	this.config = function(cfg){
+		$.extend(this.para,cfg);
+		if (null == this.para["class"] || undefined == this.para["class"])
+			this.para["class"] = "";
+		if (null != this.para["id"] && undefined != this.para["id"])
+			this.id=this.para["id"];
+		return this;
+	};
+	this.initDom = function(){
+		if (null != this.mydom)
+			return;
+		this.mydom = $('<form class="CondgroupModule"></form>');
+		if (this.id != '')
+			this.mydom.attr('id',this.id);
+		this.mydom.append('<table class="CondgroupModule-tb"><tr><td class="CondgroupModule-head"><span>' 
+			+ this.para["title"]+'</span></td><td class="CondgroupModule-condition"></td></tr></table>');
+		var condHtml = "<table>";
+		for(var i=0;i<this.para["rows"];i++){
+			condHtml += "<tr>";
+			for(var j=0;j<this.para["cols"];j++){
+				condHtml += "<td class='CondgroupModule-label'></td><td class='CondgroupModule-input'></td>";
+			}
+			condHtml += "</tr>";
+		}
+		condHtml += "</table>";
+		this.mydom.find('td.CondgroupModule-condition').append(condHtml);
+	};
+	this.render = function(dom){
+		this.initDom(dom);
+		if (null == this.mydom)
+			return;
+		this.setParent(dom);
+		if (null != this.parent)
+			this.mydom.appendTo(this.parent);
+		return this;
+	};
+	this.set = function(name,value){
+		if (name == "item"){
+			if (typeof value.col != 'number' || typeof value.row != 'number')
+				return;
+			var row = this.mydom.find('td.CondgroupModule-condition table tr').eq(value.row);
+			if(null == row || row.length < 1)
+				return;
+			var cellName = row.find('td').eq(value.col * 2);
+			var cellValue = row.find('td').eq(value.col * 2 + 1);
+			if (null == cellName || cellName.length < 1 || null ==cellValue || cellValue.length < 1)
+				return;
+			if (value.name instanceof Module){
+				cellName.append(value.name.mydom);
+			}else if (typeof value.name == "string"){
+				cellName.html(value.name);
+			}else{
+				cellName.append(value.name);
+			}
+			if (value.dom instanceof Module){
+				cellValue.append(value.dom.mydom);
+			}else{
+				cellValue.append(value.dom);
+			}
+		}
+		return this;
+	};
+	this.get=function(name){
+		if (name=="serializeValue")
+			return this.mydom.serialize();
+	};
+}
+CondgroupModule.prototype = new Module();

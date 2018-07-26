@@ -1,0 +1,88 @@
+/*
+ *  global function module: dlgChgpwd(callback)
+ *							callback parameter: {curpwd: oldpwd, newpwd: newpwd}
+ *  dely on DialogModule, LabelInputModule
+ */
+$(function(){
+	var jsPath = getJSPath("chgpwd.js");
+	$("<link>").attr(
+		{
+			rel: "stylesheet",
+			type: "text/css",
+			href: jsPath + "chgpwd.css"
+		}
+	).appendTo("head");
+});
+ 
+var g_chgpwdCallback = null;
+var g_dlgChgPwd = null;
+
+function chgpwdCallback(){
+	if (null == g_chgpwdCallback || undefined == g_chgpwdCallback){
+		g_dlgChgPwd.set("close");
+		return;
+	}
+	var prepwd = g_dlgChgPwd.mydom.find('input[name=oldpwd]').val();
+	var newpwd = g_dlgChgPwd.mydom.find('input[name=newpwd]').val();
+	var checkpwd = g_dlgChgPwd.mydom.find('input[name=checkpwd]').val();
+	if (newpwd != checkpwd){
+		showError("密码确认与新密码不匹配");
+		return;
+	}
+	if (newpwd.length < 1){
+		showError("新密码不能为空");
+		return;
+	}
+	var para = {curpwd: prepwd, newpwd: newpwd};
+	if (true == g_chgpwdCallback(para)){
+		g_dlgChgPwd.set("close");
+	}
+}
+function dlgChgpwd(callback){
+	g_chgpwdCallback = callback;
+	if (null == g_dlgChgPwd || undefined == g_dlgChgPwd){
+		g_dlgChgPwd = new DialogModule();
+		g_dlgChgPwd.config({
+			id:"g_dlgChgpwd",
+			title:"密码修改",
+			width: 440,
+			buttons:[
+			    {
+			    	text:"修 改",
+			    	click:function(){
+						chgpwdCallback();
+					}
+				},
+			    {
+			    	text:"取 消",
+			    	click:function(){
+						g_dlgChgPwd.set("close");
+					}
+				}
+			]
+		});
+		g_dlgChgPwd.render();
+		
+		var dlgForm = $('<form></form>');
+		var $divLine = $('<div class="line"></div>');
+		var labelInput = new LabelinputModule();
+		labelInput.config({"label":"原 密 码","labelWidth": 80,"name":"oldpwd","type":"password"}).render($divLine);
+		dlgForm.append($divLine);
+		
+		$divLine = $('<div class="line"></div>');
+		labelInput = new LabelinputModule();
+		labelInput.config({"label":"新 密 码","labelWidth": 80,"name":"newpwd","type":"password"}).render($divLine);
+		dlgForm.append($divLine);
+
+		$divLine = $('<div class="line"></div>');
+		labelInput = new LabelinputModule();
+		labelInput.config({"label":"密码确认","labelWidth": 80,"name":"checkpwd","type":"password"}).render($divLine);
+		dlgForm.append($divLine);
+		
+		g_dlgChgPwd.set("append",dlgForm);
+	}else{
+		g_dlgChgPwd.mydom.find('form')[0].reset();
+	}
+	g_dlgChgPwd.set("open");
+}
+

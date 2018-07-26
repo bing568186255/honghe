@@ -1,0 +1,51 @@
+@CHARSET "UTF-8";
+
+div.PageloginModule{
+	position: absolute;
+	text-align:center;
+}
+div.PageloginModule form{
+	padding-top: 10px;
+}
+div.PageloginModule .title{
+	margin: 20px;
+	color: #000055;
+}
+div.PageloginModule div.line{
+	margin-left: 10px;
+    margin-top: 18px;
+    margin-bottom: 18px;
+    text-align: left;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+div.PageloginModule .LabelinputModule.imgcheck input{
+	font-size: 1em;
+	width:80px;
+	margin-right:20px;
+	padding: 5px 5px;
+	margin-right:0px;
+}
+div.PageloginModule div.checkimg{
+	display: inline-block;
+	height:30px;
+	line-height: 30px;
+}
+div.PageloginModule img.checkimg{
+	vertical-align:middle;
+	margin-top:-2px;
+	margin-left: 1px;		/*加这个兼容IE8*/
+}
+div.PageloginModule input[type=submit] {
+	width: 200px;
+	padding: 5px 5px;
+    margin: 20px 0px 20px 30px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    font-size: 16px;
+    background: green;
+    color: white;
+}
+div.PageloginModule input[type=submit]:hover {
+    background: #005500;
+}

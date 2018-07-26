@@ -1,0 +1,343 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    
+<%@ include file="backglobal.jsp" %>
+<link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="css/global.css" />
+<link rel="stylesheet" type="text/css" href="css/combox.css" />
+<link rel="stylesheet" type="text/css" href="css/jquery-ui-timepicker-addon.css" />
+<script type=text/javascript src="js/jquery-1.9.1.min.js"></script>
+<script type=text/javascript src="js/jquery.form.min.js"></script>
+<script type=text/javascript src="js/jquery-ui.min.js"></script>
+<script type=text/javascript src="js/common.js"></script>
+<script type=text/javascript src="js/globalize.js"></script>
+<script type=text/javascript src="js/globalize.culture.de-DE.js"></script>
+<script type=text/javascript src="js/combox.js"></script>
+<script type=text/javascript src="js/jquery-ui-timepicker-addon.js"></script>
+<script type=text/javascript src="js/jquery.ui.datepicker-zh-CN.js"></script>
+<script type=text/javascript src="js/jquery-ui-timepicker-zh-CN.js"></script>
+
+<script type=text/javascript src="modules/modules.js"></script>
+<script type=text/javascript src="js/Tdrag.js"></script>
+<script type=text/javascript src="modules/button/button.js"></script>
+<script type=text/javascript src="modules/labelinput/labelinput.js"></script>
+<script type=text/javascript src="modules/dialog/dialog.js"></script>
+<script type=text/javascript src="js/messagebox.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SimpleGrid.css" />
+<script type=text/javascript src="js/SimpleGrid.js"></script>
+
+<script type=text/javascript src="js/amapinit.js"></script>
+
+<script type="text/javascript">
+var g_largeType=[
+    "教育","医疗","商业","公共服务","交通","行政办公","其他"
+];
+var g_unitType=[
+	[
+	 "托儿所","小学","初中","高中","中专大专","高等院校","其他"
+	],[
+	 "综合医院","专科医院","卫生服务中心"
+	],[
+	 "体育活动中心","社区文化站","社区健身场","综合超市","大型购物中心","社区肉菜市场"
+	],[
+	 "青少年活动中心","敬老院","老年人活动站","社区文娱中心","社区警务室","社区服务站","图书馆","网络通信服务"
+	],[
+	 "地铁站","公交站","火车站","飞机场","长途客运站"
+	],[
+	 "党政机关","公安局","街道办事处","街道派出所","社区居委会","社区服务中心"
+	],[
+	 "绿地","危险品仓库","垃圾焚烧厂","垃圾填埋厂","高压变电站","加油加气站"
+	]
+];
+var g_unitCategory=[
+	[
+	 "A3","A3","A3","A3","A3","A3","A3"
+	],[
+	 "A5","A5","A5"
+	],[
+	 "A4","A2","A6","B1","B1","B9"
+	],[
+	 "A6","A6","A6","A6","A1","A1","A1","B4"
+	],[
+	 "B9","B9","B9","B9","B9"
+	],[
+	 "A1","A1","A1","A1","A1","A6"
+	],[
+	 "G1","M","B9","B9","A","W"
+	]
+];
+var typeColors=[
+	{type:'R',name:'居住用地',colorno: 50},
+	{type:'R1',name:'一类居住有地',colorno: 51},
+	{type:'R2',name:'二类居住有地',colorno: 50},
+	{type:'R3',name:'三类居住有地',colorno: 40},
+	{type:'A',name:'公共管理与公共服务用地',colorno: 231},
+	{type:'A1',name:'行政办公用地',colorno: 231},
+	{type:'A2',name:'文化设施用地',colorno: 241},
+	{type:'A3',name:'教育科研用地',colorno: 21},
+	{type:'A4',name:'体育用地',colorno: 62},
+	{type:'A5',name:'医疗卫生用地',colorno: 11},
+	{type:'A6',name:'社会福利设施用地',colorno: 243},
+	{type:'A7',name:'文物古迹用地',colorno: 244},
+	{type:'A8',name:'外事用地',colorno: 230},
+	{type:'A9',name:'宗教设施用地',colorno: 232},
+	{type:'B',name:'商业服务业设施用地',colorno: 240},
+	{type:'B1',name:'商业设施用地',colorno: 240},
+	{type:'B2',name:'商务设施用地',colorno: 240},
+	{type:'B3',name:'娱乐康体用地',colorno: 240},
+	{type:'B4',name:'公用设施营业网点用地',colorno: 240},
+	{type:'B9',name:'其它服务设施用地',colorno: 240},
+	{type:'M',name:'工业用地',colorno: 35},
+	{type:'M1',name:'一类工业用地',colorno: 35},
+	{type:'M2',name:'二类工业用地',colorno: 37},
+	{type:'M3',name:'三类工业用地',colorno: 39},
+	{type:'W',name:'物流仓储用地',colorno: 193},
+	{type:'W1',name:'一类物流仓储用地',colorno: 193},
+	{type:'W2',name:'二类物流仓储用地',colorno: 195},
+	{type:'W3',name:'三类物流仓储用地',colorno: 197},
+	{type:'S',name:'交通设施用地',colorno: 8},
+	{type:'S1',name:'城市道路用地',colorno: 8},
+	{type:'S2',name:'轨道交通线路用地',colorno: 8},
+	{type:'S3',name:'综合交通枢纽用地',colorno: 8},
+	{type:'S4',name:'交通场站用地',colorno: 8},
+	{type:'S9',name:'其它交通设施用地',colorno: 8},
+	{type:'U',name:'公用设施用地',colorno: 154},
+	{type:'U1',name:'供应设施用地',colorno: 154},
+	{type:'U2',name:'环境设施用地',colorno: 136},
+	{type:'U3',name:'安全设施用地',colorno: 144},
+	{type:'U9',name:'其它公用设施用地',colorno: 147},
+	{type:'G',name:'绿地',colorno:90},
+	{type:'G1',name:'公园绿地',colorno:90},
+	{type:'G2',name:'防护绿地',colorno:104},
+	{type:'G3',name:'广场用地',colorno:93},
+	{type:'H1',name:'城乡居民点建设用地',colorno: 0},
+	{type:'H11',name:'城市建设用地',colorno: 0},
+	{type:'H12',name:'镇建设用地',colorno: 0},
+	{type:'H13',name:'乡建设用地',colorno: 0},
+	{type:'H14',name:'村庄建设用地',colorno: 0},
+	{type:'H15',name:'独立建设用地',colorno: 0},
+	{type:'H2',name:'区域交通设施用地',colorno: 9},
+	{type:'H21',name:'铁路用地',colorno: 9},
+	{type:'H22',name:'公路用地',colorno: 9},
+	{type:'H23',name:'港口用地',colorno: 9},
+	{type:'H24',name:'机场用地',colorno: 9},
+	{type:'H25',name:'管道运输用地',colorno: 9},
+	{type:'H3',name:'区域公用设施用地',colorno: 156},
+	{type:'H4',name:'特殊用地',colorno:87},
+	{type:'H41',name:'军事用地',colorno:87},
+	{type:'H42',name:'安保用地',colorno:87},
+	{type:'H5',name:'采矿用地',colorno: 34},
+	{type:'E1',name:'水域',colorno:140},
+	{type:'E11',name:'自然水域',colorno:132},
+	{type:'E12',name:'水库',colorno:140},
+	{type:'E13',name:'坑塘沟渠',colorno:130},
+	{type:'E2',name:'农林用地',colorno: 82},
+	{type:'E3',name:'其它非建设用地',colorno:53},
+	{type:'E31',name:'空闲地',colorno:53},
+	{type:'E32',name:'其它非利用地',colorno:55}
+];
+
+var colorIndexes=[
+	[0,0,0],[255,0,0],[255,255,0],[0,255,0],[0,255,255],[0,0,255],[255,0,255],[255,255,255],
+	[128,128,128],[192,192,192],[255,0,0],[255,127,127],[204,0,0],[204,102,102],[153,0,0],[153,76,76],
+	[127,0,0],[127,63,63],[76,0,0],[76,38,38],[255,63,0],[255,159,127],[204,51,0],[204,127,102],
+	[153,38,0],[153,95,76],[127,31,0],[127,79,63],[76,19,0],[76,47,38],[255,127,0],[255,191,127],
+	[204,102,0],[204,153,102],[153,76,0],[153,114,76],[127,63,0],[127,95,63],[76,38,0],[76,57,38],
+	[255,191,0],[255,223,127],[204,153,0],[204,178,102],[153,114,0],[153,133,76],[127,95,0],[127,111,63],
+	[76,57,0],[76,66,38],[255,255,0],[255,255,127],[204,204,0],[204,204,102],[153,153,0],[153,153,76],
+	[127,127,0],[127,127,63],[76,76,0],[76,76,38],[191,255,0],[223,255,127],[153,204,0],[178,204,102],
+	[114,153,0],[133,153,76],[95,127,0],[111,127,63],[57,76,0],[66,76,38],[127,255,0],[191,255,127],
+	[102,204,0],[153,204,102],[76,153,0],[114,153,76],[63,127,0],[95,127,63],[38,76,0],[57,76,38],
+	[63,255,0],[159,255,127],[51,204,0],[127,204,102],[38,153,0],[95,153,76],[31,127,0],[79,127,63],
+	[19,76,0],[47,76,38],[0,255,0],[127,255,127],[0,204,0],[102,204,102],[0,153,0],[76,153,76],
+	[0,127,0],[63,127,63],[0,76,0],[38,76,38],[0,255,63],[127,255,159],[0,204,51],[102,204,127],
+	[0,153,38],[76,153,95],[0,127,31],[63,127,79],[0,76,19],[38,76,47],[0,255,127],[127,255,191],
+	[0,204,102],[102,204,153],[0,153,76],[76,153,114],[0,127,63],[63,127,95],[0,76,38],[38,76,57],
+	[0,255,191],[127,255,223],[0,204,153],[102,204,178],[0,153,114],[76,153,133],[0,127,95],[63,127,111],
+	[0,76,57],[38,76,66],[0,255,255],[127,255,255],[0,204,204],[102,204,204],[0,153,153],[76,153,153],
+	[0,127,127],[63,127,127],[0,76,76],[38,76,76],[0,191,255],[127,223,255],[0,153,204],[102,178,204],
+	[0,114,153],[76,133,153],[0,95,127],[63,111,127],[0,57,76],[38,66,76],[0,127,255],[127,191,255],
+	[0,102,204],[102,153,204],[0,76,153],[76,114,153],[0,63,127],[63,95,127],[0,38,76],[38,57,76],
+	[0,63,255],[127,159,255],[0,51,204],[102,127,204],[0,38,153],[76,95,153],[0,31,127],[63,79,127],
+	[0,19,76],[38,47,76],[0,0,255],[127,127,255],[0,0,204],[102,102,204],[0,0,153],[76,76,153],
+	[0,0,127],[63,63,127],[0,0,76],[38,38,76],[63,0,255],[159,127,255],[51,0,204],[127,102,204],
+	[38,0,153],[95,76,153],[31,0,127],[79,63,127],[19,0,76],[47,38,76],[127,0,255],[191,127,255],
+	[102,0,204],[153,102,204],[76,0,153],[114,76,153],[63,0,127],[95,63,127],[38,0,76],[57,38,76],
+	[191,0,255],[223,127,255],[153,0,204],[178,102,204],[114,0,153],[133,76,153],[95,0,127],[111,63,127],
+	[57,0,76],[66,38,76],[255,0,255],[255,127,255],[204,0,204],[204,102,204],[153,0,153],[153,76,153],
+	[127,0,127],[127,63,127],[76,0,76],[76,38,76],[255,0,191],[255,127,223],[204,0,153],[204,102,178],
+	[153,0,114],[153,76,133],[127,0,95],[127,63,111],[76,0,57],[76,38,66],[255,0,127],[255,127,191],
+	[204,0,102],[204,102,153],[153,0,76],[153,76,114],[127,0,63],[127,63,95],[76,0,38],[76,38,57],
+	[255,0,63],[255,127,159],[204,0,51],[204,102,127],[153,0,38],[153,76,95],[127,0,31],[127,63,79],
+	[76,0,19],[76,38,47],[51,51,51],[91,91,91],[132,132,132],[173,173,173],[214,214,214],[255,255,255]
+];
+function intToHexString(v,len){
+	var ret = v.toString(16);
+	if (ret.length < len){
+		var a = len - ret.length;
+		for(var i=0;i<a;i++){
+			ret = '0' + ret;
+		}
+	}
+	return ret;
+}
+function getIndexColor(index){
+    if (index < 0 || index >= colorIndexes.length){
+    	return "";
+    }
+    var ret = '#';
+    for(var i=0;i<3;i++){
+    	ret += intToHexString(colorIndexes[index][i],2);
+    }
+    return ret;
+}
+
+var g_nodeNameMax=[20,24,20];
+var g_nodeNameList={
+	"xmkffw": {"name": "明确项目开发范围", "progress": "1","index":"1"},
+	"xmcbys": {"name": "审核项目初步预算", "progress": "1","index":"2"},
+	"shjcpw": {"name": "上会决策取得授权批文", "progress": "1","index":"3"},
+	"kybzdwzb": {"name": "可研编制单位招标", "progress": "1","index":"4"},
+	"tdkffa": {"name": "确定土地开发方案", "progress": "1","index":"5"},
+	"kxxyjbg": {"name": "审核可行性研究报告", "progress": "1","index":"6"},
+	"cwsh": {"name": "财务审核意见", "progress": "1","index":"7"},
+	"rzsh": {"name": "融资部审核意见", "progress": "1","index":"8"},
+	"xmsj": {"name": "项目审计意见", "progress": "1","index":"9"},
+	"shjc": {"name": "上会决策", "progress": "1","index":"10"},
+	"sfht": {"name": "三方合同拟定", "progress": "1","index":"11"},
+	"htsh1": {"name": "合同审核", "progress": "1","index":"12"},
+	"zfxs": {"name": "和属地政府协商", "progress": "1","index":"13"},
+	"zjdw": {"name": "确认资金到位", "progress": "1","index":"14"},
+	"gkzb": {"name": "公开招标", "progress": "1","index":"15"},
+	"sfht": {"name": "四方合同拟定", "progress": "1","index":"16"},
+	"htsh2": {"name": "合同审核", "progress": "1","index":"17"},
+	"slggzh": {"name": "设立共管账户", "progress": "1","index":"18"},
+	"ggxysh": {"name": "共管协议审核意见", "progress": "1","index":"19"},
+	"qdggxy": {"name": "签订共管协议", "progress": "1","index":"20"},
+			
+	"tdsskf": {"name": "土地实施开发", "progress": "2","index":"1"},
+	"jsbzdwzb": {"name": "精算编制单位招标", "progress": "2","index":"2"},
+	"tjjsbg": {"name": "提交精算报告", "progress": "2","index":"3"},
+	"shjsbg": {"name": "审核项目精算报告", "progress": "2","index":"4"},
+	"xmss": {"name": "发起项目实施", "progress": "2","index":"5"},
+	"qdht1": {"name": "签订合同", "progress": "2","index":"6"},
+	"cbbhtba": {"name": "成本部合同备案", "progress": "2","index":"7"},
+	"qdht2": {"name": "签订合同", "progress": "2","index":"8"},
+	"cwbsh": {"name": "财务部审核", "progress": "2","index":"9"},
+	"cbbshht": {"name": "成本部审核合同", "progress": "2","index":"10"},
+	"sdwjgd": {"name": "三调文件归档", "progress": "2","index":"11"},
+	"zfdqpw": {"name": "政府动迁批文", "progress": "2","index":"12"},
+	"bcfa": {"name": "补偿方案", "progress": "2","index":"13"},
+	"cbkzbba1": {"name": "成本控制部备案", "progress": "2","index":"14"},
+	"shfxpg": {"name": "社会风险评估", "progress": "2","index":"15"},
+	"xhjsbg": {"name": "细化精算报告", "progress": "2","index":"16"},
+	"jsbgsh": {"name": "精算报告审核", "progress": "2","index":"17"},
+	"cqgg": {"name": "政府征地拆迁公告", "progress": "2","index":"18"},
+	"cqgz": {"name": "开展征地拆迁工作", "progress": "2","index":"19"},
+	"cbkzbba2": {"name": "成本控制部备案", "progress": "2","index":"20"},
+	"tdzs": {"name": "土地征收", "progress": "2","index":"21"},
+	"wtjs": {"name": "委托建设", "progress": "2","index":"22"},
+	"cbsh": {"name": "成本审核", "progress": "2","index":"23"},
+	"ztyjh": {"name": "召开专题研究会", "progress": "2","index":"24"},
+			
+	"xmch": {"name": "项目策划", "progress": "3","index":"1"},
+	"ghsh": {"name": "规划审核", "progress": "3","index":"2"},
+	"fasj": {"name": "方案设计", "progress": "3","index":"3"},
+	"wyhjy": {"name": "投资决策委员会决议", "progress": "3","index":"4"},
+	"tzfa": {"name": "调整方案", "progress": "3","index":"5"},
+	"fash1": {"name": "方案审核", "progress": "3","index":"6"},
+	"sshjc": {"name": "上三会决策", "progress": "3","index":"7"},
+	"tdlx": {"name": "项目立项", "progress": "3","index":"8"},
+	"hqtdsyz": {"name": "获取土地使用证", "progress": "3","index":"9"},
+	"bzkybg": {"name": "编制可研报告", "progress": "3","index":"10"},
+	"shkybg": {"name": "审核可研报告", "progress": "3","index":"11"},
+	"lxpf": {"name": "获取发改委立项批复", "progress": "3","index":"12"},
+	"gszb": {"name": "专业公司招标", "progress": "3","index":"13"},
+	"fatj": {"name": "方案提交", "progress": "3","index":"14"},
+	"fash2": {"name": "方案审核", "progress": "3","index":"15"},
+	"gcxk": {"name": "获取工程许可", "progress": "3","index":"16"},
+	"gcsg": {"name": "工程施工", "progress": "3","index":"17"},
+	"gcjs": {"name": "工程决算", "progress": "3","index":"18"},
+	"gcsj": {"name": "工程审计报告备案", "progress": "3","index":"19"},
+	"gcyj": {"name": "工程移交", "progress": "3","index":"20"}
+};
+function transNodeName(nodeName){
+	var info = g_nodeNameList[nodeName];
+	if (null == info){
+		return "未知";
+	}
+	return info.name;
+}
+function getNodeNameList(progress){
+	var ret = [];
+	for(var key in g_nodeNameList){
+		var value = g_nodeNameList[key];
+		if (progress == value.progress){
+			ret.push(value.name);
+		}
+	}
+	return ret;
+}
+
+jQuery(function($){ 
+     $.datepicker.regional['zh-CN'] = {   
+        clearText: '清除',   
+        clearStatus: '清除已选日期',   
+        closeText: '关闭',   
+        closeStatus: '不改变当前选择',   
+        prevText: '<上月',   
+        prevStatus: '显示上月',   
+        prevBigText: '<<',   
+        prevBigStatus: '显示上一年',   
+        nextText: '下月>',   
+        nextStatus: '显示下月',   
+        nextBigText: '>>',   
+        nextBigStatus: '显示下一年',   
+        currentText: '今天',   
+        currentStatus: '显示本月',   
+        monthNames: ['一月','二月','三月','四月','五月','六月', '七月','八月','九月','十月','十一月','十二月'],   
+        monthNamesShort: ['一月','二月','三月','四月','五月','六月', '七月','八月','九月','十月','十一月','十二月'],   
+        monthStatus: '选择月份',   
+        yearStatus: '选择年份',   
+        weekHeader: '周',   
+        weekStatus: '年内周次',   
+        dayNames: ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'],   
+        dayNamesShort: ['周日','周一','周二','周三','周四','周五','周六'],   
+        dayNamesMin: ['日','一','二','三','四','五','六'],   
+        dayStatus: '设置 DD 为一周起始',   
+        dateStatus: '选择 m月 d日, DD',   
+        dateFormat: 'yy-mm-dd',   
+        firstDay: 1,   
+        initStatus: '请选择日期', 
+        showMonthAfterYear: true,
+        yearSuffix: '年',
+        isRTL: false
+    };   
+    $.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+    Globalize.culture("de-DE");
+    
+    $.widget( "ui.timespinner", $.ui.spinner, {
+        options: {
+          // seconds
+          step: 60 * 1000,
+          // hours
+          page: 60
+        },
+        _parse: function( value ) {
+          if ( typeof value === "string" ) {
+            // already a timestamp
+            if ( Number( value ) == value ) {
+              return Number( value );
+            }
+            return +Globalize.parseDate( value );
+          }
+          return value;
+        },
+     
+        _format: function( value ) {
+        	return Globalize.format( new Date(value), "t" );
+        }
+      });    
+});
+</script>

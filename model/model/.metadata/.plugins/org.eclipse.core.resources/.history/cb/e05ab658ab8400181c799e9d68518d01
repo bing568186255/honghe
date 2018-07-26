@@ -1,0 +1,499 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<%@ include file="global.jsp" %>
+<title>项目周边参考房价</title>
+
+<style type="text/css">
+	div.infotitle{
+		font-size: 1.5em;
+		font-weight: bold;
+	}
+	span.button.infobutton{
+		padding-left:0.6em;
+		padding-right:0.6em;
+	}
+	div.edit{
+		margin-top: 5px;
+		border-top:#999 solid 1px;
+		padding-top: 5px;
+	}
+</style>
+
+</head>
+
+<body>
+    <div id="container" class="container" tabindex="0"></div>
+    <div id="lefttop">
+    	<div id="buttonsDiv">
+	    	<span class="button" id="addPoint" onclick="addPoint()">增加参考房价点</span>
+    	</div>
+    	<div id="edittip" style="display:none;color:red;background:blue"></div>
+    </div>
+</body>
+
+<script language="JavaScript">
+var g_areaPolygon = null;
+var g_curPoint = null;
+var g_projID = '${projID}';
+var g_curClickedObj = null;
+var g_bSelPoint = false; 
+var g_dlgObj = null;
+$(function(){
+	amapinit({
+		type:"2D",
+		show:"depart",
+		domIDName:"container",
+		clickfun:mapClick,
+		complete:mapLoaded
+	});
+	initDlg();
+});
+
+function initDlg(){
+	g_dlgObj = new DialogModule();
+	g_dlgObj.config({
+		id:"g_dlgObj",
+		title:"增加参考房价信息",
+		width: 440,
+		height: 510,
+		buttons:[
+		    {
+		    	text:"提 交",
+		    	click:function(){
+		    		commitHouse();
+				}
+			},
+		    {
+		    	text:"取 消",
+		    	click:function(){
+		    		g_dlgObj.set("close");
+				}
+			}
+		]
+	});
+	g_dlgObj.render();
+	
+	var dlgForm = $('<form></form>');
+	dlgForm.append('<input type="hidden" name="op" value="add"/>');
+	dlgForm.append('<input type="hidden" name="id"/>');
+	dlgForm.append('<input type="hidden" name="projID"/>');
+	dlgForm.append('<input type="hidden" name="lng"/>');
+	dlgForm.append('<input type="hidden" name="lat"/>');
+	dlgForm.append('<input type="hidden" name="addr"/>');
+	
+	var labelWidth = 80;
+	var inputWidth = 240;
+	var $divLine = $('<div class="line"></div>');
+	var labelInput = new LabelinputModule();
+	labelInput.config({"label":"名称","labelWidth": labelWidth,
+		"inputWidth":inputWidth,
+		"class":"noempty maxlen",
+		"attr":{"showname":"名称","maxlen":60},
+		"name":"name"}).render($divLine);
+	dlgForm.append($divLine);
+
+	$divLine = $('<div class="line"></div>');
+	labelInput = new LabelinputModule();
+	labelInput.config({"label":"距离(米)","labelWidth": labelWidth,
+		"inputWidth":inputWidth,
+		"class":"noempty number",
+		"name":"dist"}).render($divLine);
+	labelInput.mydom.find('input').attr('readonly','readonly');
+	dlgForm.append($divLine);
+	
+	var usages=['住宅','商用','工业'];
+	$divLine = $('<div class="line"></div>');
+	labelInput = new LabelinputModule();
+	labelInput.config({"label":"用途","labelWidth": labelWidth,
+		"inputWidth":inputWidth,
+		"type":"select",
+		"display":usages,
+		"value":usages,
+		onchange: selUsage,
+		"name":"usage"}).render($divLine);
+	labelInput.mydom.find('input').attr('readonly','readonly');
+	dlgForm.append($divLine);
+
+	var isNew=['新开盘','二手房'];
+	$divLine = $('<div class="line"></div>');
+	labelInput = new LabelinputModule();
+	labelInput.config({"label":"开盘性质","labelWidth": labelWidth,
+		"inputWidth":inputWidth,
+		"type":"select",
+		"display":isNew,
+		"value":['1','0'],
+		"name":"isNew"}).render($divLine);
+	dlgForm.append($divLine);
+	
+	$divLine = $('<div class="line"></div>');
+	labelInput = new LabelinputModule();
+	labelInput.config({"label":"开盘日期","labelWidth": labelWidth,
+		"inputWidth":inputWidth,
+		"class":"noempty datepicker",
+		"attr":{"showname":"开盘日期"},
+		"name":"open"}).render($divLine);
+	labelInput.mydom.find('input').attr('readonly','readonly');
+	dlgForm.append($divLine);
+	
+	$divLine = $('<div class="line"></div>');
+	labelInput = new LabelinputModule();
+	labelInput.config({"label":"使用年限","labelWidth": labelWidth,
+		"inputWidth":inputWidth,
+		"class":"onlynum",
+		"attr":{"showname":"使用年限"},
+		"name":"useYear"}).render($divLine);
+	dlgForm.append($divLine);
+
+	var rent=['销售','租赁'];
+	$divLine = $('<div class="line"></div>');
+	labelInput = new LabelinputModule();
+	labelInput.config({"label":"租售性质","labelWidth": labelWidth,
+		"inputWidth":inputWidth,
+		"type":"select",
+		"value":['0','1'],
+		"display":rent,
+		"name":"isRent"}).render($divLine);
+	dlgForm.append($divLine);
+	
+	$divLine = $('<div class="line"></div>');
+	labelInput = new LabelinputModule();
+	labelInput.config({"label":"开盘价","labelWidth": labelWidth,
+		"inputWidth":inputWidth,
+		"class":"onlyfloat",
+		"attr":{"showname":"开盘价"},
+		"name":"openPrice"}).render($divLine);
+	dlgForm.append($divLine);
+
+	$divLine = $('<div class="line"></div>');
+	labelInput = new LabelinputModule();
+	labelInput.config({"label":"当前价","labelWidth": labelWidth,
+		"inputWidth":inputWidth,
+		"class":"onlyfloat",
+		"attr":{"showname":"当前价"},
+		"name":"curPrice"}).render($divLine);
+	dlgForm.append($divLine);
+
+	var type=['花园洋房','小高层','板式'];
+	$divLine = $('<div class="line"></div>');
+	labelInput = new LabelinputModule();
+	labelInput.config({"label":"类型","labelWidth": labelWidth,
+		"inputWidth":inputWidth,
+		"type":"select",
+		"display":type,
+		"value":type,
+		"name":"type"}).render($divLine);
+	dlgForm.append($divLine);
+	
+	g_dlgObj.set("append",dlgForm);	
+	
+	init.initInput();
+}
+function selUsage(){
+	var val = g_dlgObj.mydom.find('select[name=usage]').val();
+	var typeSel = g_dlgObj.mydom.find('select[name=type]');
+	if (val == '住宅'){
+		var type=['花园洋房','小高层','板式'];
+		typeSel.find('option').remove();
+		for(var i=0;i<type.length;i++){
+			var option = "<option value='"+type[i]+"'>"+type[i]+"</option>";
+			typeSel.append(option);
+		}
+		typeSel.show();
+	}else if (val == '商用'){
+		var type=['综合','底铺','住房下面','办公'];
+		typeSel.find('option').remove();
+		for(var i=0;i<type.length;i++){
+			var option = "<option value='"+type[i]+"'>"+type[i]+"</option>";
+			typeSel.append(option);
+		}
+		typeSel.show();
+	}else{
+		typeSel.hide();
+	}
+}
+
+function mapLoaded(){
+	if (null != g_projID && g_projID.length > 0){
+		$.ajax({
+			type : "post",
+			url : '${urlhead}/ajax.html?ajax=getLocation',
+			dataType : 'json',
+			data: {'objtype':'area','objid':g_projID},
+			timeout : 10000,
+			success : function(msg, status) {
+				if (msg.status == 200) {
+					if (null != msg.data){
+						if (msg.data.iLocType==2){
+							var pts = eval('('+msg.data.cPolygon+')');
+							g_areaPolygon = new AMap.Polygon({
+						        path: pts,			//设置多边形边界路径
+						        strokeColor: '#F00', //线颜色
+						        strokeOpacity: 0.3, 	//线透明度
+						        strokeWeight: 2,    //线宽
+						        fillColor: '#F00', 	//填充色
+						        fillOpacity: 0.1,	//填充透明度
+						        bubble: true
+						    });
+							g_areaPolygon.setMap(g_map);
+							
+							readAlready();
+						}else{
+							noArea();
+						}
+					}else{
+						noArea();
+					}
+				}else{
+					showError(msg.msg);
+				}
+			},
+			error: function(){
+				showError('网络访问失败！');
+			}
+		});	
+	}else{
+		showError('参数错误！');
+		$('#buttonsDiv').hide();
+	}
+}
+
+function noArea(){
+	showError("所属项目还没有设置区域，请先设置项目区域");
+	$('#buttonsDiv').hide();
+}
+
+function readAlready(){
+	$.ajax({
+		type : "post",
+		url : '${urlhead}/ajax.html?ajax=getHouse',
+		dataType : 'json',
+		data: {'projid':g_projID},
+		timeout : 10000,
+		success : function(msg, status) {
+			if (msg.status == 200) {
+				if (null != msg.rows){
+					for(var i=0;i<msg.rows.length;i++){
+						var info = msg.rows[i];
+						addShowMarker(info);
+					}
+				}
+			}else{
+				showError(msg.msg);
+			}
+			g_map.setFitView();
+		},
+		error: function(){
+			showError('网络访问失败！');
+		}
+	});	
+}
+
+//在地图增加显示点信息
+function addShowMarker(info){
+	var ptMarker = new AMap.Marker({
+		position: [info.fLng,info.fLat],
+		title: info.cName,
+		extData: info
+	});
+	ptMarker.setTop(true);
+	ptMarker.setMap(g_map);
+	
+	ptMarker.on('click',function(){
+		var data = this.getExtData();
+		var curPt = this.getPosition();
+		var html=[];
+		html.push('<div class="infotitle">'+data.cName+'</div>');
+		html.push('<div class="infoline">用途：'+ data.cUsage + '</div>');
+		html.push('<div class="infoline">距离：'+ data.iDist + '米</div>');
+		html.push('<div class="infoline">开盘性质：'+ (data.isNew==1?'新开盘':'二手房') + '</div>');
+		html.push('<div class="infoline">开盘日期：'+ data.dtOpen + '</div>');
+		html.push('<div class="infoline">使用年限：'+ data.iUseYear + '</div>');
+		html.push('<div class="infoline">租售性质：'+ (data.isRent==1?'租赁':'销售') + '</div>');
+		html.push('<div class="infoline">开盘价：'+ data.fOpenPrice + '</div>');
+		html.push('<div class="infoline">当前价：'+ data.fCurPrice + '</div>');
+		if (data.cUsage != '工业'){
+			html.push('<div class="infoline">类型：'+ data.cType + '</div>');
+		}
+		html.push('<div class="infoline">坐标：');
+		html.push(curPt.getLng()+' , '+curPt.getLat());
+		html.push('</div>');
+		html.push('<div class="infoline">位置：'+ data.cAddr + '</div>');
+		html.push('<div class="edit">');
+		html.push('<span class="button infobutton" onclick="chgContent()">修改内容</span>');
+		html.push('<span class="button infobutton" onclick="movePoint()">移动位置</span>');
+		html.push('<span class="button infobutton" onclick="delHouse()">删除信息</span>');
+		html.push('</div>');
+		showInfoWindow(curPt,html.join(''),new AMap.Pixel(0,-30));
+		g_curClickedObj = this;
+	});	
+}
+//信息基本信息
+function chgContent(){
+	closeInfoWindow();
+	if (null == g_curClickedObj)
+		return;
+	var info = g_curClickedObj.getExtData();
+	var form = g_dlgObj.mydom.find('form');
+	form[0].reset();
+	form.find('input[name=op]').val('chg');
+	form.find('input[name=id]').val(info.iID);
+	form.find('input[name=projID]').val(g_projID);
+	form.find('input[name=name]').val(info.cName);
+	form.find('input[name=dist]').val(info.iDist);
+	form.find('select[name=usage]').val(info.cUsage);
+	form.find('input[name=open]').val(info.dtOpen);
+	form.find('input[name=useYear]').val(info.iUseYear);
+	form.find('input[name=openPrice]').val(info.fOpenPrice);
+	form.find('input[name=curPrice]').val(info.fCurPrice);
+	form.find('select[name=isRent]').val(info.isRent);
+	form.find('select[name=isNew]').val(info.isNew);
+	if (info.cUsage != '工业'){
+		form.find('select[name=type]').show();
+		form.find('select[name=type]').val(info.cType);
+	}else{
+		form.find('select[name=type]').hide();
+	}
+	g_dlgObj.set('title','修改参考房价信息');
+	g_dlgObj.set("open");
+}
+//移动点位置
+function movePoint(){
+	closeInfoWindow();
+	g_bSelPoint = true;
+	$('#edittip').html("请在地图上选择新的位置");
+	$('#edittip').show();
+	$('#buttonsDiv').hide();
+}
+//删除周边配套信息
+function delHouse(){
+	closeInfoWindow();
+	if(null == g_curClickedObj)
+		return;
+	showConfirm('确定删除选择的周边参考房价信息吗？',function(sure,id){
+		if (!sure)
+			return;
+		$.ajax({
+			type : "post",
+			url : '${urlhead}/ajax.html?ajax=delHouse',
+			dataType : 'json',
+			data: {'id':id},
+			timeout : 10000,
+			success : function(msg, status) {
+				if (msg.status == 200) {
+					showMessage("删除参考房价信息成功");
+					g_map.remove(g_curClickedObj);
+					g_curClickedObj = null;
+				}else{
+					showError(msg.msg);
+				}
+			},
+			error: function(){
+				showError('网络访问失败！');
+			}
+		});	
+	},g_curClickedObj.getExtData().iID);
+}
+
+//增加新的位置
+function addPointInfo(point,formatAddr,dist){
+	g_dlgObj.mydom.find('form')[0].reset();
+	g_dlgObj.set('title','增加参考房价信息');
+	g_dlgObj.mydom.find('input[name=op]').val('add');
+	g_dlgObj.mydom.find('input[name=projID]').val(g_projID);
+	g_dlgObj.mydom.find('input[name=lng]').val(point[0]);
+	g_dlgObj.mydom.find('input[name=lat]').val(point[1]);
+	g_dlgObj.mydom.find('input[name=addr]').val(formatAddr);
+	g_dlgObj.mydom.find('input[name=dist]').val(dist);
+	g_dlgObj.set("open");
+}
+
+function addPoint(){
+	g_bSelPoint = true;
+	g_curClickedObj = null;
+	$('#edittip').html("请在地图上点击来增加参考房价信息");
+	$('#edittip').show();
+	$('#buttonsDiv').hide();
+}
+function mapClick(pt,formatAddr){
+	if (true != g_bSelPoint)
+		return;
+	$('#edittip').hide();
+	$('#buttonsDiv').show();
+	
+	//计算点与多点形最近的距离
+	var dist = calcPointToPolygon(pt,g_areaPolygon);
+	
+	g_bSelPoint = false;
+	if (null != g_curClickedObj){
+		var info = g_curClickedObj.getExtData();
+		//提交后台修改点位置信息
+		var data={};
+		data.id=info.iID;
+		data.op="chg";
+		data.lng = pt[0];
+		data.lat = pt[1];
+		data.addr = formatAddr;
+		data.dist = dist;
+		$.ajax({
+			type : "post",
+			url : '${urlhead}/ajax.html?ajax=editHouse',
+			dataType : 'json',
+			data: data,
+			timeout : 10000,
+			success : function(msg, status) {
+				if (msg.status == 200) {
+					showMessage("提交修改位置成功");
+					g_map.remove(g_curClickedObj);
+					g_curClickedObj = null;
+					var infoT = msg.info;
+					addShowMarker(infoT);
+				}else{
+					showError(msg.msg);
+				}
+			},
+			error: function(){
+				showError('网络访问失败！');
+			}
+		});	
+	}else{
+		addPointInfo(pt,formatAddr,dist);
+	}
+}
+
+function commitHouse(){
+	if (!checkForm($('#g_dlgObj form')))
+		return;
+	var data = $('#g_dlgObj form').serialize();
+	$.ajax({
+		type : "post",
+		url : '${urlhead}/ajax.html?ajax=editHouse',
+		dataType : 'json',
+		data: data,
+		timeout : 10000,
+		success : function(msg, status) {
+			if (msg.status == 200) {
+				showMessage("周边参考房价信息提交成功");
+				var info = msg.info;
+				if ('add' == g_dlgObj.mydom.find('input[name=op]').val()){
+					addShowMarker(info);
+				}else if (null != g_curClickedObj){
+					g_curClickedObj.setExtData(info);
+				}
+				
+	    		g_dlgObj.set("close");
+			}else{
+				showError(msg.msg);
+			}
+		},
+		error: function(){
+			showError('网络访问失败！');
+		}
+	});	
+}
+</script>
+
+</html>

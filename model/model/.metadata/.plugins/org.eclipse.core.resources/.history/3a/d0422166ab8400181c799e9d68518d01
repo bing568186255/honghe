@@ -1,0 +1,38 @@
+/*
+ * config:
+ * 		image: background image file name
+ * !! parent css position need absolute or relative
+ * 		or parent is default(document)
+ */
+function BkgroundModule(){
+	this.name = "bkground";
+	this.parent = $('body');
+	this.para={};
+	this.config = function(cfg){
+		this.para=cfg;
+		if (null != this.para["id"] || undefined != this.para["id"])
+			this.id=this.para["id"];
+	};
+	this.render = function(dom){
+		if (null == this.mydom){
+			if (null == this.para["image"] || undefined == this.para["image"])
+				return;
+			var $html = $("<img>");
+			if (this.id != '')
+				$html.attr('id',this.id);
+			$html.css({"position":"absolute","z-inde":"0",
+				"left":"0","top":"0",
+				"width":"100%","height":"100%"
+			});
+			this.setParent(dom);
+			if (null != this.parent)
+				$html.appendTo(this.parent);
+			this.mydom = $html;
+		}
+		if (null == this.para["image"] || undefined == this.para["image"])
+			this.mydom.attr("src","");
+		else
+			this.mydom.attr("src",this.para["image"]);
+	};
+}
+BkgroundModule.prototype = new Module();

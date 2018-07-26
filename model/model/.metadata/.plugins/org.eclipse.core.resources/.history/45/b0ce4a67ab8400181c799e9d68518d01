@@ -1,0 +1,121 @@
+/*
+ * relay on: jquery.form 
+ * config:
+ * 		id
+ * 		class
+ * 		content
+ * 		MIMEtype: i.e.: image/*,audio/*,default all file type
+ * 		url: ajax commit file url address
+ * 		async: true or false,commit is async, defalut true(async) and showError
+ * 		changeCallback: change file event callback function
+ * 		commitCallback: commit success callback function
+ * set:
+ *		enable:
+ *		commit: value: expend data to url
+ * get:
+ *		enable: true or false
+ */
+$(function(){
+	var jsPath = getJSPath("uploadfile2.js");
+	$("<link>").attr(
+		{
+			rel: "stylesheet",
+			type: "text/css",
+			href: jsPath + "uploadfile2.css"
+		}
+	).appendTo("head");
+});
+function UploadFile2Module(){
+	this.name = "uploadfile2";
+	this.timeoutID = null;
+	this.para={};
+	this.para["enable"] = true;
+	this.para["class"] = "";
+	this.para["content"] = "选择文件";
+	this.para["async"] = true;
+	this.para["MIMEtype"] = "";
+	this.form = null;
+	this.config = function(cfg){
+		$.extend(this.para,cfg);
+		return this;
+	};
+	this.initDom = function(){
+		if (null != this.mydom)
+			return;
+		this.mydom = $('<div class="UploadFile2Module '+this.para["class"]+'"></div>');
+		if (this.id != '')
+			this.mydom.attr('id',this.id);
+		if($.browser.msie && !$.support.leadingWhitespace){
+			this.mydom.append('<span class="UploadFile2Module-btn">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>');
+		}else{
+			this.mydom.append('<span class="UploadFile2Module-btn">'+this.para["content"]+'</span>');
+		}
+		
+		this.form = $('<form method="post"></form>');
+		var inputFile = $('<input type="file" name="filename"/>');
+		if ('' != this.para["MIMEtype"])
+			inputFile.attr('accept',this.para["MIMEtype"]);
+		
+		var chgFile = function(){
+			if (typeof this.para["changeCallback"] == "function"){
+				var value=this.form.find('input').val();
+				this.para["changeCallback"](value,this);
+			}
+		}.bind(this);
+		inputFile.bind('change',chgFile);
+		
+		this.form.append(inputFile);
+		this.mydom.append(this.form);		
+	};
+	this.render = function(dom){
+		this.initDom();
+		if (null == this.mydom)
+			return;
+		this.setParent(dom);
+		if (null != this.parent)
+			this.mydom.appendTo(this.parent);
+		return this;
+	};
+	this.set = function(name,value){
+		if (name == "enable"){
+			this.para["enable"] = value;
+			if (false == this.para["enable"]){
+				this.mydom.addClass('disable');
+			}else{
+				this.mydom.removeClass('disable');
+			}
+		}else if (name=="commit"){
+			if (null == this.para["url"] || '' == this.para["url"])
+				return;
+			var url= this.para["url"];
+			if (typeof value == "string"){
+				if (url.indexOf('?')>0)
+					url += '&' + value;
+				else
+					url += '?'+value;
+			}
+			var comp = function(msg){
+				if (typeof this.para["commitCallback"] == 'function')
+					this.para["commitCallback"](msg);
+			}.bind(this);
+			this.form.ajaxSubmit({
+                type:'post',
+    			url : url,
+    			async: this.para["async"],
+    			dataType : 'json',
+                success:function(msg){
+                	comp(msg);
+                },
+                error:function(){
+    				showError("网络访问异常，提交失败！");
+                }
+            });
+		}
+		return this;
+	};
+	this.get=function(name){
+		if (name=="enable")
+			return (false != this.para["enable"]);
+	};
+}
+UploadFile2Module.prototype = new Module();

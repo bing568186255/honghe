@@ -1,0 +1,20 @@
+﻿@CHARSET "UTF-8";
+
+.custom-combobox {
+	position: relative;
+	display: inline-block;
+}
+
+.custom-combobox-toggle {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	margin-left: -1px;
+	padding: 0;
+	width: 27px;
+}
+
+.custom-combobox-input {
+	margin: 0;
+	padding: 2px 10px;
+}

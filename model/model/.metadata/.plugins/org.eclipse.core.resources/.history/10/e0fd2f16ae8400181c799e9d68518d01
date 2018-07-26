@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap        
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"        
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">  
+<sqlMap> 
+   <select id="getProject" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT
+			"t_project"."cProjID",
+			"t_project"."cProjName",
+			"t_project"."cFullName",
+			"t_project"."cProperty",
+			"t_project"."fAcreage",
+			to_char("t_project"."dtCreate",'yyyy-mm-dd') as dtCeate,
+			"t_project"."cSource",
+			"t_project"."iYears",
+			"t_project"."iPlannedAmount",
+			to_char("t_project"."dtPlannedOver",'yyyy-mm-dd') as dtPlannedOver,
+			"t_project"."cStreet",
+			"t_project"."iFinancing",
+			"t_project"."fPlotRatio",
+			"t_project"."iInvestment",
+			"t_project"."cStatus"
+		FROM "t_project"
+		<dynamic prepend="where">
+			<isPropertyAvailable prepend="and" property="projID">
+			"cProjID"=#projID#
+			</isPropertyAvailable>
+		</dynamic>
+  	</select>
+  	
+   <select id="getFinancing" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT
+			"t_financing"."iID",
+			"t_financing"."cProjID",
+			to_char("t_financing"."dtCreate",'yyyy-mm-dd') as "dtCreate",
+			"t_financing"."fAmount",
+			"t_financing"."cSource",
+			"t_financing"."cSourceName"
+		FROM "t_financing"
+		<dynamic prepend="where">
+			<isPropertyAvailable prepend="and" property="projID">
+			"cProjID"=#projID#
+			</isPropertyAvailable>
+		</dynamic>
+	</select>
+   <select id="statFinancing" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT "t_financing"."cProjID","t_project"."cProjName",
+			"t_financing"."cSource",
+			sum("t_financing"."fAmount") as "totalAmount"
+		FROM "t_financing","t_project"
+		where "t_financing"."cProjID"="t_project"."cProjID"
+			<isPropertyAvailable prepend="and" property="projID">
+			"cProjID"=#projID#
+			</isPropertyAvailable>
+		group by "t_financing"."cProjID","t_project"."cProjName","t_financing"."cSource"
+	</select>
+   <select id="statFinancingMon" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		select 
+			to_char("t_financing"."dtCreate",'yyyy-mm') as "mon",
+			"cSource",sum("fAmount") as "amount"
+		from "t_financing"
+		<dynamic prepend="where">
+			<isPropertyAvailable prepend="and" property="projID">
+			"cProjID"=#projID#
+			</isPropertyAvailable>
+		</dynamic>
+		group by to_char("t_financing"."dtCreate",'yyyy-mm'),"cSource"
+	</select>
+
+   <select id="getProjectNode" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT
+			"t_project_node"."cProjID",
+			"t_project_node"."cNodeName",
+			to_char("t_project_node"."tmStart",'yyyy-mm-dd HH24:mi:ss') as "tmStart",
+			"t_project_node"."cDepart",
+			"t_project_node"."iPlannedDays",
+			to_char("t_project_node"."tmEnd",'yyyy-mm-dd HH24:mi:ss') as "tmEnd"
+		FROM "t_project_node"
+		<dynamic prepend="where">
+			<isPropertyAvailable prepend="and" property="projID">
+			"cProjID"=#projID#
+			</isPropertyAvailable>
+		</dynamic>
+	</select>
+   <select id="lastProjectNode" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		select 	
+				"t_project_node"."cProjID",
+				"t_project_node"."cNodeName",
+				to_char(a."tmStart",'yyyy-mm-dd HH24:mi:ss') as "tmStart"
+		FROM "t_project_node",
+		 (SELECT
+				"t_project_node"."cProjID",
+				max("t_project_node"."tmStart") as "tmStart"
+			FROM "t_project_node"
+			<dynamic prepend="where">
+				<isPropertyAvailable prepend="and" property="projID">
+				"cProjID"=#projID#
+				</isPropertyAvailable>
+			</dynamic>
+			group by "t_project_node"."cProjID") a
+	  	where "t_project_node"."cProjID" = a."cProjID" AND
+			"t_project_node"."tmStart" = a."tmStart"
+	</select>
+
+   <select id="getProjectAbnormal" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT
+			"t_project_abnormal"."iID",
+			"t_project_abnormal"."cProjID",
+			to_char("t_project_abnormal"."dtCreate",'yyyy-mm-dd HH24:mi:ss') as "dtCreate",
+			"t_project_abnormal"."cInfo",
+			"t_project_abnormal"."cDepart",
+			"t_project_abnormal"."cResult"
+		FROM "t_project_abnormal"
+		<dynamic prepend="where">
+			<isPropertyAvailable prepend="and" property="projID">
+			"cProjID"=#projID#
+			</isPropertyAvailable>
+		</dynamic>
+	</select>
+   <select id="statProjectAbnormal" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT "cProjID",count(*) as count
+		FROM "t_project_abnormal"
+		<dynamic prepend="where">
+			<isPropertyAvailable prepend="and" property="projID">
+			"cProjID"=#projID#
+			</isPropertyAvailable>
+		</dynamic>
+		group by "cProjID"
+	</select>
+	
+   <select id="getMassif" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT
+			"t_massif"."cMassifID",
+			"t_massif"."cProjID",
+			"t_massif"."cMassifName",
+			"t_massif"."cUsage",
+			"t_massif"."cCategory",
+			"t_massif"."fAcreage",
+			"t_massif"."cStyle",
+			"t_massif"."fDensity",
+			to_char("t_massif"."dtStart",'yyyy-mm-dd') as "dtStart",
+			"t_massif"."fVolRate",
+			"t_massif"."iPlannedAmount",
+			"t_massif"."iNeedRemove",
+			"t_massif"."fAgreeRate",
+			"t_massif"."iRemoved",
+			"t_massif"."fPrice",
+			to_char("t_massif"."dtSupply",'yyyy-mm-dd') as "dtSupply",
+			"t_massif"."iSaleType",
+			"t_massif"."fSalePrice",
+			"t_massif"."cPlanPhoto"
+		FROM "t_massif"
+		<dynamic prepend="where">
+			<isPropertyAvailable prepend="and" property="projID">
+			"cProjID"=#projID#
+			</isPropertyAvailable>
+			<isPropertyAvailable prepend="and" property="massifID">
+			"cMassifID"=#massifID#
+			</isPropertyAvailable>
+		</dynamic>
+  	</select>
+   <select id="getExpend" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT
+			"t_expend"."iID",
+			"t_expend"."cMassifID",
+			"t_massif"."cMassifName",
+			to_char("t_expend"."dtCreate",'yyyy-mm-dd HH24:mi:ss') as "dtCreate",
+			"t_expend"."cType",
+			"t_expend"."cSubject",
+			"t_expend"."fAmount",
+			"t_expend"."cObject",
+			"t_expend"."cDepart",
+			"t_expend"."cNodeName"
+		FROM "t_expend","t_massif"
+		where "t_expend"."cMassifID"="t_massif"."cMassifID"
+			<isPropertyAvailable prepend="and" property="projID">
+			"t_massif"."cProjID"=#projID#
+			</isPropertyAvailable>
+			<isPropertyAvailable prepend="and" property="massifID">
+			"t_expend"."cMassifID"=#massifID#
+			</isPropertyAvailable>
+	</select>
+   <select id="statExpend" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT "t_expend"."cMassifID",
+			"t_massif"."cMassifName",
+			"t_massif"."cProjID",
+			sum("t_expend"."fAmount") as "totalAmount"
+		FROM "t_expend","t_massif"
+		where "t_expend"."cMassifID"="t_massif"."cMassifID"
+			<isPropertyAvailable prepend="and" property="projID">
+			"t_massif"."cProjID"=#projID#
+			</isPropertyAvailable>
+			<isPropertyAvailable prepend="and" property="massifID">
+			"t_expend"."cMassifID"=#massifID#
+			</isPropertyAvailable>
+		group by "t_expend"."cMassifID",
+			"t_massif"."cMassifName",
+			"t_massif"."cProjID"
+	</select>
+   <select id="statExpendMon" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		select 
+			to_char("t_expend"."dtCreate",'yyyy-mm') as "mon",
+			sum("t_expend"."fAmount") as "amount"
+		FROM "t_expend","t_massif"
+		where "t_expend"."cMassifID"="t_massif"."cMassifID"
+			<isPropertyAvailable prepend="and" property="projID">
+			"t_massif"."cProjID"=#projID#
+			</isPropertyAvailable>
+			<isPropertyAvailable prepend="and" property="massifID">
+			"t_expend"."cMassifID"=#massifID#
+			</isPropertyAvailable>
+		group by to_char("t_expend"."dtCreate",'yyyy-mm')
+	</select>
+   <select id="statExpendForProject" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT "t_massif"."cProjID",
+			sum("t_expend"."fAmount") as "totalAmount"
+		FROM "t_expend","t_massif"
+		where "t_expend"."cMassifID"="t_massif"."cMassifID"
+			<isPropertyAvailable prepend="and" property="projID">
+			"t_massif"."cProjID"=#projID#
+			</isPropertyAvailable>
+		group by "t_massif"."cProjID"
+	</select>
+
+   <select id="statRemoveForProject" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT "t_massif"."cProjID","t_project"."cProjName",
+			sum("t_massif"."iNeedRemove") as "needRemove",
+			sum("t_massif"."iRemoved") as "removed"
+		FROM "t_massif","t_project"
+		where "t_massif"."cProjID" = "t_project"."cProjID" and
+			"t_massif"."iNeedRemove" > 0
+			<isPropertyAvailable prepend="and" property="projID">
+			"t_massif"."cProjID"=#projID#
+			</isPropertyAvailable>
+		group by "t_massif"."cProjID","t_project"."cProjName"
+	</select>
+
+   <select id="getMassifNode" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT
+			"t_massif_node"."cMassifID",
+			"t_massif"."cMassifName",
+			"t_massif_node"."cNodeName",
+			to_char("t_massif_node"."tmStart",'yyyy-mm-dd HH24:mi:ss') as "tmStart",
+			"t_massif_node"."cDepart",
+			"t_massif_node"."iPlannedDays",
+			to_char("t_massif_node"."tmEnd",'yyyy-mm-dd HH24:mi:ss') as "tmEnd"
+		FROM "t_massif_node","t_massif"
+		where "t_massif_node"."cMassifID"="t_massif"."cMassifID"
+			<isPropertyAvailable prepend="and" property="projID">
+			"t_massif"."cProjID"=#projID#
+			</isPropertyAvailable>
+			<isPropertyAvailable prepend="and" property="massifID">
+			"t_massif_node"."cMassifID"=#massifID#
+			</isPropertyAvailable>
+	</select>
+   <select id="lastMassifNode" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		select 	
+				"t_massif_node"."cMassifID",
+				"t_massif_node"."cNodeName",
+				a."cMassifName",
+				to_char(a."tmStart",'yyyy-mm-dd HH24:mi:ss') as "tmStart"
+		FROM "t_massif_node",
+		 (SELECT
+				"t_massif_node"."cMassifID",
+				"t_massif"."cMassifName",
+				max("t_massif_node"."tmStart") as "tmStart"
+			FROM "t_massif_node","t_massif"
+			where "t_massif_node"."cMassifID"="t_massif"."cMassifID"
+			<isPropertyAvailable prepend="and" property="projID">
+			"t_massif"."cProjID"=#projID#
+			</isPropertyAvailable>
+			<isPropertyAvailable prepend="and" property="massifID">
+			"t_massif_node"."cMassifID"=#massifID#
+			</isPropertyAvailable>
+			group by "t_massif_node"."cMassifID","t_massif"."cMassifName")
+		a
+	  	where "t_massif_node"."cMassifID" = a."cMassifID" AND
+			"t_massif_node"."tmStart" = a."tmStart"
+	</select>
+
+   <select id="getMassifAbnormal" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT
+			"t_massif_abnormal"."iID",
+			"t_massif_abnormal"."cMassifID",
+			"t_massif"."cMassifName",
+			to_char("t_massif_abnormal"."dtCreate",'yyyy-mm-dd HH24:mi:ss') as "dtCreate",
+			"t_massif_abnormal"."cInfo",
+			"t_massif_abnormal"."cDepart",
+			"t_massif_abnormal"."cResult"
+		FROM "t_massif_abnormal","t_massif"
+		where "t_massif_abnormal"."cMassifID"="t_massif"."cMassifID"
+			<isPropertyAvailable prepend="and" property="projID">
+			"t_massif"."cProjID"=#projID#
+			</isPropertyAvailable>
+			<isPropertyAvailable prepend="and" property="massifID">
+			"t_massif_abnormal"."cMassifID"=#massifID#
+			</isPropertyAvailable>
+	</select>
+   <select id="statMassifAbnormal" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT "t_massif_abnormal"."cMassifID",count(*) as count
+		FROM "t_massif_abnormal","t_massif"
+		where "t_massif_abnormal"."cMassifID"="t_massif"."cMassifID"
+			<isPropertyAvailable prepend="and" property="projID">
+			"t_massif"."cProjID"=#projID#
+			</isPropertyAvailable>
+			<isPropertyAvailable prepend="and" property="massifID">
+			"t_massif_abnormal"."cMassifID"=#massifID#
+			</isPropertyAvailable>
+		group by "t_massif_abnormal"."cMassifID"
+	</select>
+</sqlMap>  
