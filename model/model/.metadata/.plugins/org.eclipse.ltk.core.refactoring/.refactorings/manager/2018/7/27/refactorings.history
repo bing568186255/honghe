@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring accessors="true" comment="Delete 3 elements from project &apos;manager&apos;&#x0D;&#x0A;- Original project: &apos;manager&apos;&#x0D;&#x0A;- Original elements:&#x0D;&#x0A;     sigar.jar&#x0D;&#x0A;     sigar-amd64-winnt.dll&#x0D;&#x0A;     sigar-x86-winnt.dll" description="Delete elements" element1="WebContent/WEB-INF/lib/sigar-amd64-winnt.dll" element2="WebContent/WEB-INF/lib/sigar-x86-winnt.dll" element3="WebContent/WEB-INF/lib/sigar.jar" elements="0" flags="589830" id="org.eclipse.jdt.ui.delete" resources="3" stamp="1530930899566" subPackages="false" version="1.0"/>
-</session>
