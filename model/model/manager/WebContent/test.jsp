@@ -21,7 +21,7 @@
 function ajaxData(){
 	$.ajax({
 		type : "post",
-		url : '${urlhead}/ajax.html?ajax=test1',
+		url : '${urlhead}/ajax.html?ajax=test',
 		dataType : 'json',
 		data: {'type':'类型','id':'12345'},
 		timeout : 10000,
