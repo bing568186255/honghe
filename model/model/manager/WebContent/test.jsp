@@ -21,9 +21,9 @@
 function ajaxData(){
 	$.ajax({
 		type : "post",
-		url : '${urlhead}/ajax.html?ajax=test',
+		url : '${urlhead}/ajax.html?ajax=lvxmTotal',
 		dataType : 'json',
-		data: {'type':'类型','id':'12345'},
+		data: {},
 		timeout : 10000,
 		success : function(msg, status) {
 			if (msg.status == 200) {

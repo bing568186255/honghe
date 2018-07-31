@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+
 import com.ibatis.common.resources.Resources;
 import com.ibatis.sqlmap.client.SqlMapClient;
 import com.ibatis.sqlmap.client.SqlMapClientBuilder;
@@ -46,4 +49,27 @@ public class DBOperate {
 		}
 		return hmList;
 	}
+	
+	//1.2	各区县项目概览展示接口(项目数)
+		public static List<HashMap> getLYXMTotal(HashMap hm){
+			List<HashMap> hmList = null;
+			try {
+				hmList = (List<HashMap>)sqlMapClient.queryForList("getLYXMTotal",hm);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return hmList;
+		}
+		
+		//1.2	各区县项目完工数
+				@SuppressWarnings({ "rawtypes", "unchecked" })
+				public static Integer getLYXMWGS(HashMap hm){
+					Integer wgs = 0;
+					try {
+						wgs = (Integer) sqlMapClient.queryForObject("getLYXMWGS",hm);
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+					return wgs;
+				}
 }
