@@ -99,6 +99,32 @@ public class AjaxPage extends HttpServlet {
 		String json = JSONObject.fromObject(hmRet).toString();
 		response.getOutputStream().write(json.getBytes("UTF-8"));			
 	}
+	
+	public void lvxmEchart(HttpServletRequest request,HttpServletResponse response)throws ServletException,IOException {
+		HashMap hmRet = new HashMap();
+		checkUser(request,response);
+		String type=(String)request.getParameter("type");
+		HashMap hm = new HashMap();
+		if(null != type) {
+			hm.put("type",type);
+			List<HashMap> listLYXM = DBOperate.getChartData(hm,type);
+			hmRet.put("status", 200);
+			hmRet.put("rows", listLYXM);
+			String json = JSONObject.fromObject(hmRet).toString();
+			response.getOutputStream().write(json.getBytes("UTF-8"));
+		}else {
+			hmRet.put("status", 400);
+			hmRet.put("rows", null);
+			String json = JSONObject.fromObject(hmRet).toString();
+			response.getOutputStream().write(json.getBytes("UTF-8"));
+		}
+
+	}
+	
+	
+	
+	
+	
 	public void lvxmList(HttpServletRequest request,HttpServletResponse response)
 			throws ServletException,IOException{
 		HashMap hmRet = new HashMap();

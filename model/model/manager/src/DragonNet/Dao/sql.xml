@@ -3,6 +3,39 @@
     PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"        
     "http://ibatis.apache.org/dtd/sql-map-2.dtd">  
 <sqlMap> 
+	<select id="getXMSTJ" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		select 
+		"qxbm" AS "qxbm" 
+		, sum(xmid)as "xms"
+		FROM "LYXM"
+		group by "qxbm"
+	</select>
+	
+	<select id="getXMMJTJ" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		select 
+		"qxbm" AS "qxbm" 
+		, sum(xmid)as "xmmj"
+		FROM "LYXM"
+		group by "qxbm"
+	</select>
+	
+	<select id="getJSZTTJ" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		select 
+		"jszt" AS "jszt"
+		, sum(xmid)as "xms"
+		FROM "LYXM"
+		group by "jszt"
+	</select>
+		
+	<select id="getXMSXTJ" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		select 
+		"xmsx" AS "xmsx"
+		, sum(xmid)as "xms"
+		FROM "LYXM"
+		group by "xmsx"
+	</select>
+
+
    <select id="getLYXM" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
     	select *
 		FROM "LYXM"
