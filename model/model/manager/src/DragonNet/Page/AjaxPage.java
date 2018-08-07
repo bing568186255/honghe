@@ -182,12 +182,12 @@ public class AjaxPage extends HttpServlet {
 	private void checkUser (HttpServletRequest request,HttpServletResponse response) throws IOException {
 		HashMap hmRet = new HashMap();
 		SysUser user = (SysUser)request.getSession().getAttribute(GlobalConst.SESS_ATTR_SYSUSER);
-		if (null == user){
+		/*if (null == user){
 			hmRet.put("status", 400);
 			hmRet.put("msg", "请登录后操作！");
 			String json = JSONObject.fromObject(hmRet).toString();
 			response.getOutputStream().write(json.getBytes("UTF-8"));
 			return;
-		}
+		}*/
 	}
 }
