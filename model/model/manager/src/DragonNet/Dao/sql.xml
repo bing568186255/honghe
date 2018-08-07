@@ -104,4 +104,12 @@
 		</dynamic>
 		group by "qxbm"
   	</select>
+  	
+  	<select id="getQXinfo" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+    	SELECT
+			*
+		FROM
+			"XXDY"
+		where "bm" = #qxbm#
+  	</select>
 </sqlMap>  

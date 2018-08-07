@@ -167,6 +167,10 @@ public class AjaxPage extends HttpServlet {
 				hmRet.put("jszt","已完成");
 				Integer wgs = DBOperate.getLYXMWGS(hmRet);
 				h.put("wgs", wgs);
+				List<HashMap> qxList = DBOperate.getQXinfo(hmRet);
+				if(!CollectionUtils.isEmpty(qxList)){
+					h.put("qxmc", qxList.get(0).get("mc"));
+				}
 			}
 		}
 		hmRet.put("status", 200);
