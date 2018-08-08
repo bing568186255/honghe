@@ -21,7 +21,7 @@
 function ajaxData(){
 	$.ajax({
 		type : "post",
-		url : '${urlhead}/ajax.html?ajax=lvxmTotal',
+		url : '${urlhead}/ajax.html?ajax=lvxmXR',
 		dataType : 'json',
 		data: {},
 		timeout : 10000,

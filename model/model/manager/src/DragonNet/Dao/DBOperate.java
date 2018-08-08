@@ -82,10 +82,10 @@ public class DBOperate {
 
 	// 1.2 各区县项目完工数
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static Integer getLYXMWGS(HashMap hm) {
-		Integer wgs = 0;
+	public static HashMap getLYXMWGS(HashMap hm) {
+		HashMap wgs = new HashMap();
 		try {
-			wgs = (Integer) sqlMapClient.queryForObject("getLYXMWGS", hm);
+			wgs = (HashMap) sqlMapClient.queryForObject("getLYXMWGS", hm);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

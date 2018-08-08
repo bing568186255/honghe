@@ -85,13 +85,27 @@
 			<isPropertyAvailable prepend="and" property="qxbm">
 			"qxbm"=#qxbm#
 			</isPropertyAvailable>
+			<isPropertyAvailable prepend="and" property="jszt">
+			"jszt"=#jszt#
+			</isPropertyAvailable>
+			<isPropertyAvailable prepend="and" property="xmsx">
+			"xmsx"=#xmsx#
+			</isPropertyAvailable>
+			<isPropertyAvailable prepend="and" property="xmyt">
+			"xmyt"=#xmyt#
+			</isPropertyAvailable>
+			<isPropertyAvailable prepend="and" property="xmxz">
+			"xmxz"=#xmxz#
+			</isPropertyAvailable>
 		</dynamic>
 		group by "qxbm"
   	</select>
   	
-  	<select id="getLYXMWGS" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+  	<select id="getLYXMWGS" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
     	SELECT
-			COUNT (*) AS "xmzs"
+			COUNT (*) AS "xmzs",
+			SUM ("ztz") AS "xmztz",
+			SUM ("sjljtz") AS "sjljtz"
 		FROM
 			"LYXM"
 		<dynamic prepend="where">
