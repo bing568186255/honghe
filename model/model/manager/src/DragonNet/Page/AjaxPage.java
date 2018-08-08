@@ -266,9 +266,10 @@ public class AjaxPage extends HttpServlet {
 						if(hMap != null){
 							HashMap subItem = new HashMap();
 							String [] positionArray = hMap.get("xmzb").toString().split(",");
-							position.put("longitude",positionArray[0]);
-							position.put("latitude", positionArray[1]);
-							subItem.put("position", position);
+							HashMap subPosition = new HashMap();
+							subPosition.put("longitude",positionArray[0]);
+							subPosition.put("latitude", positionArray[1]);
+							subItem.put("position", subPosition);
 							subItem.put("title", hMap.get("xmm"));
 							List<HashMap<String,Object>> subTKList = new ArrayList<>();
 							HashMap<String,Object> subFirstLi = new HashMap<>();
