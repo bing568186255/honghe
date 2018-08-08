@@ -1,7 +1,13 @@
 package DragonNet.Page;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -201,15 +207,16 @@ public class AjaxPage extends HttpServlet {
 			int index = 1;
 			for(HashMap map : listLYXMTotal){
 				//查询区县名称；
-				hmRet.put("qxbm", map.get("qxbm"));
-				List<HashMap> qxList = DBOperate.getQXinfo(hmRet);
+				hm.put("qxbm", map.get("qxbm"));
+				List<HashMap> qxList = DBOperate.getQXinfo(hm);
 				if(!CollectionUtils.isEmpty(qxList)){
 					map.put("qxmc", qxList.get(0).get("mc"));
 				}
 				HashMap item = new HashMap();
 				HashMap position = new HashMap();
-				position.put("longitude", "102.286698");
-				position.put("latitude", "23.366792");
+				String[] s = getCoordinate(map.get("qxmc").toString());
+				position.put("longitude", s[0]);
+				position.put("latitude", s[1]);
 				item.put("position", position);
 				item.put("title", map.get("qxmc"));
 				item.put("xmsl",  formatNum(map.get("xmzs")));
@@ -224,23 +231,23 @@ public class AjaxPage extends HttpServlet {
 				firstLi.put("itemactually", formatNum(map.get("sjljtz")));
 				parentList.add(firstLi);
 				HashMap<String,Object> secondeLi = new HashMap<>();
-				hmRet.put("jszt","已完成");
-				HashMap wgs = DBOperate.getLYXMWGS(hmRet);
+				hm.put("jszt","已完成");
+				HashMap wgs = DBOperate.getLYXMWGS(hm);
 				secondeLi.put("completename", "完工数");
 				secondeLi.put("completeNum", wgs == null ?0:formatNum(wgs.get("wgs")));
 				secondeLi.put("completedesign", wgs == null ?0:formatNum(wgs.get("xmztz")));
 				secondeLi.put("completeactually",wgs == null ?0:formatNum(wgs.get("sjljtz")));
 				parentList.add(secondeLi);
 				HashMap<String,Object> thirdLi = new HashMap<>();
-				hmRet.put("jszt","未完成");
-				HashMap wwc = DBOperate.getLYXMWGS(hmRet);
+				hm.put("jszt","未完成");
+				HashMap wwc = DBOperate.getLYXMWGS(hm);
 				thirdLi.put("bulidname", "建设数量");
 				thirdLi.put("bulidNum", wgs == null ?0:formatNum(wgs.get("wgs")));
 				thirdLi.put("buliddesign", wgs == null ?0:formatNum(wgs.get("xmztz")));
 				thirdLi.put("bulidactually",wgs == null ?0:formatNum(wgs.get("sjljtz")));
 				parentList.add(thirdLi);
 				HashMap<String,Object> fourLi = new HashMap<>();
-				fourLi.put("planningname", "建设数量");
+				fourLi.put("planningname", "计划数量");
 				fourLi.put("planningNum", jisuanNum(firstLi.get("itemcount"),secondeLi.get("completeNum"),thirdLi.get("bulidNum")));
 				fourLi.put("buliddesign", jisuanNum(firstLi.get("itemdesign"),secondeLi.get("completedesign"),thirdLi.get("buliddesign")));
 				fourLi.put("bulidactually",jisuanNum(firstLi.get("itemactually"),secondeLi.get("completeactually"),thirdLi.get("bulidactually")));
@@ -248,8 +255,57 @@ public class AjaxPage extends HttpServlet {
 				item.put("list", parentList);
 				index++;
 				//县下面旅游项目集合构建
-				List<HashMap<String,Object>> subList = new ArrayList<>();
-				item.put("subList", subList);
+				hm.remove("jszt");
+				if (null != jszt)
+				hm.put("jszt",jszt);
+				List<HashMap> listLYXM = DBOperate.getLYXMGL(hm);
+				if(!CollectionUtils.isEmpty(listLYXM)){
+					List<HashMap<String,Object>> subList = new ArrayList<>();
+					int ii = 1;
+					for(HashMap hMap : listLYXM){
+						if(hMap != null){
+							HashMap subItem = new HashMap();
+							String [] positionArray = hMap.get("xmzb").toString().split(",");
+							position.put("longitude",positionArray[0]);
+							position.put("latitude", positionArray[1]);
+							subItem.put("position", position);
+							subItem.put("title", hMap.get("xmm"));
+							List<HashMap<String,Object>> subTKList = new ArrayList<>();
+							HashMap<String,Object> subFirstLi = new HashMap<>();
+							subFirstLi.put("id", ii);
+							subFirstLi.put("itemnature", hMap.get("xmgk"));
+							subFirstLi.put("itemtype", hMap.get("xmlx"));
+							subFirstLi.put("itmeproperty", hMap.get("xmsx"));
+							subFirstLi.put("itemformat", hMap.get("xmyt"));
+							subFirstLi.put("planningland", hMap.get("ghyd"));
+							subFirstLi.put("importantitem", hMap.get("xmxz"));
+							subFirstLi.put("itemstate", hMap.get("jszt"));
+							subTKList.add(subFirstLi);
+							HashMap<String,Object> subSecondeLi = new HashMap<>();
+							subSecondeLi.put("completename", "项目类型");
+							subSecondeLi.put("completeNum", "");
+							subSecondeLi.put("completedesign","" );
+							subSecondeLi.put("completeactually","");
+							subTKList.add(subSecondeLi);
+							HashMap<String,Object> subThirdLi = new HashMap<>();
+							subThirdLi.put("bulidname", "项目业态");
+							subThirdLi.put("bulidNum","");
+							subThirdLi.put("buliddesign","" );
+							subThirdLi.put("bulidactually","");
+							subTKList.add(subThirdLi);
+							HashMap<String,Object> subFourLi = new HashMap<>();
+							subFourLi.put("planningname", "项目建设状态");
+							subFourLi.put("planningNum", "");
+							subFourLi.put("buliddesign", "");
+							subFourLi.put("bulidactually","");
+							subTKList.add(subFourLi);
+							subItem.put("list", subTKList);
+							subList.add(subItem);
+							ii++;
+						}
+					}
+					item.put("subList", subList);
+				}
 				positionReturn.add(item);
 			}
 		}
@@ -272,6 +328,62 @@ public class AjaxPage extends HttpServlet {
 	private int jisuanNum(Object obj1,Object obj2,Object obj3){
 		return Integer.parseInt(obj1.toString()) - Integer.parseInt(obj2.toString()) -Integer.parseInt(obj3.toString());
 	}
+	
+	 /**  
+     * @param addr  
+     * 查询的地址  
+     * @return  
+     * @throws IOException  
+     */   
+    public static String[] getCoordinate(String addr) throws IOException {   
+        String lng = null;//经度  
+        String lat = null;//纬度  
+        String address = null;   
+        try {   
+            address = java.net.URLEncoder.encode(addr, "UTF-8");   
+        }catch (UnsupportedEncodingException e1) {   
+            e1.printStackTrace();   
+        }   
+        //System.out.println(address);  
+        String url = "http://api.map.baidu.com/geocoder/v2/?output=json&ak=iV88vKWCxcFd0XkPBT6G0xBG8Fa1Geim&address="+address;  
+        URL myURL = null;   
+  
+        URLConnection httpsConn = null;   
+        try {  
+            myURL = new URL(url);   
+        } catch (MalformedURLException e) {   
+            e.printStackTrace();   
+        }   
+        InputStreamReader insr = null;  
+        BufferedReader br = null;  
+        try {   
+            httpsConn = (URLConnection) myURL.openConnection();  
+            if (httpsConn != null) {   
+                insr = new InputStreamReader( httpsConn.getInputStream(), "UTF-8");   
+                br = new BufferedReader(insr);   
+                String data = null;   
+                while((data= br.readLine())!=null){   
+                    JSONObject json = JSONObject.fromObject(data);  
+                    lng = json.getJSONObject("result").getJSONObject("location").getString("lng");  
+                    lat = json.getJSONObject("result").getJSONObject("location").getString("lat");  
+                }  
+            }   
+        } catch (IOException e) {   
+            e.printStackTrace();   
+        } finally {  
+            if(insr!=null){  
+                insr.close();  
+            }  
+            if(br!=null){  
+                br.close();  
+            }  
+        }  
+        return new String[]{lng,lat};   
+    }  
+    
+    public static void main(String [] args) throws IOException{
+    	System.out.println(getCoordinate("红河县"));
+    }
 
 	private void checkUser (HttpServletRequest request,HttpServletResponse response) throws IOException {
 		HashMap hmRet = new HashMap();
