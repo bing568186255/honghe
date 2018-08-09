@@ -82,20 +82,35 @@
 		FROM
 			"LYXM"
 		<dynamic prepend="where">
-			<isPropertyAvailable prepend="and" property="qxbm">
-			"qxbm"=#qxbm#
+			<isPropertyAvailable  prepend="and" property="qxbm">
+			"qxbm" in 
+				 <iterate open=" (" close=")" conjunction="," property="qxbm">
+					#qxbm[]#
+				 </iterate>
 			</isPropertyAvailable>
 			<isPropertyAvailable prepend="and" property="jszt">
-			"jszt"=#jszt#
+			"jszt" in 
+				 <iterate open=" (" close=")" conjunction="," property="jszt">
+					#jszt[]#
+				 </iterate>
 			</isPropertyAvailable>
 			<isPropertyAvailable prepend="and" property="xmsx">
-			"xmsx"=#xmsx#
+			"xmsx" in 
+				 <iterate open=" (" close=")" conjunction="," property="xmsx">
+					#xmsx[]#
+				 </iterate>
 			</isPropertyAvailable>
 			<isPropertyAvailable prepend="and" property="xmyt">
-			"xmyt"=#xmyt#
+			"xmyt" in 
+				 <iterate open=" (" close=")" conjunction="," property="xmyt">
+					#xmyt[]#
+				 </iterate>
 			</isPropertyAvailable>
 			<isPropertyAvailable prepend="and" property="xmxz">
-			"xmxz"=#xmxz#
+			"xmxz"  in 
+				 <iterate open=" (" close=")" conjunction="," property="xmxz">
+					#xmxz[]#
+				 </iterate>
 			</isPropertyAvailable>
 		</dynamic>
 		group by "qxbm"
