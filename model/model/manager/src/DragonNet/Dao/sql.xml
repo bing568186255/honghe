@@ -4,25 +4,25 @@
     "http://ibatis.apache.org/dtd/sql-map-2.dtd">  
 <sqlMap> 
 	<select id="getXMSTJ" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
-		select 
-		"qxbm" AS "qxbm" 
-		, sum(xmid)as "xms"
-		FROM "LYXM"
-		group by "qxbm"
+		select b."bm" ,b."mc" as "qxmc" ,a."xms" from 
+		"XXDY" b  
+		left join 
+		(select "qxbm"  , count("xmid") as  "xms"  FROM  "LYXM"  GROUP BY "qxbm") a 
+		 on a."qxbm" = b."bm"
 	</select>
-	
+		
 	<select id="getXMMJTJ" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
-		select 
-		"qxbm" AS "qxbm" 
-		, sum(xmid)as "xmmj"
-		FROM "LYXM"
-		group by "qxbm"
+		select b."bm", b."mc" as "qxmc",a."xmmj"   from 
+		 "XXDY" b  		
+		left join 
+		(select "qxbm" AS "qxbm" , sum("ghyd")as "xmmj" FROM "LYXM" group by "qxbm") a 
+		on a."qxbm" = b."bm"
 	</select>
 	
 	<select id="getJSZTTJ" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
-		select 
+		 select 
 		"jszt" AS "jszt"
-		, sum(xmid)as "xms"
+		, count("xmid")as "xms"
 		FROM "LYXM"
 		group by "jszt"
 	</select>
@@ -30,7 +30,7 @@
 	<select id="getXMSXTJ" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
 		select 
 		"xmsx" AS "xmsx"
-		, sum(xmid)as "xms"
+		, count("xmid")as "xms"
 		FROM "LYXM"
 		group by "xmsx"
 	</select>
