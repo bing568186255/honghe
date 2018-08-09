@@ -244,19 +244,18 @@ public class AjaxPage extends HttpServlet {
 				hm.put("jszt", "建设中");
 				HashMap wwc = DBOperate.getLYXMWGS(hm);
 				thirdLi.put("bulidname", "建设数量");
-				thirdLi.put("bulidNum", wgs == null ? 0 : formatNum(wgs.get("xmzs")));
-				thirdLi.put("buliddesign", wgs == null ? 0 : formatNum(wgs.get("xmztz")));
-				thirdLi.put("bulidactually", wgs == null ? 0 : formatNum(wgs.get("sjljtz")));
+				thirdLi.put("bulidNum", wwc == null ? 0 : formatNum(wwc.get("xmzs")));
+				thirdLi.put("buliddesign", wwc == null ? 0 : formatNum(wwc.get("xmztz")));
+				thirdLi.put("bulidactually", wwc == null ? 0 : formatNum(wwc.get("sjljtz")));
 				thirdLi.put("jszt", "建设中");
 				parentList.add(thirdLi);
 				HashMap<String, Object> fourLi = new HashMap<>();
+				hm.put("jszt", "计划中");
+				HashMap jhz = DBOperate.getLYXMWGS(hm);
 				fourLi.put("planningname", "计划数量");
-				fourLi.put("planningNum",
-						jisuanNum(firstLi.get("itemcount"), secondeLi.get("completeNum"), thirdLi.get("bulidNum")));
-				fourLi.put("buliddesign", jisuanNum(firstLi.get("itemdesign"), secondeLi.get("completedesign"),
-						thirdLi.get("buliddesign")));
-				fourLi.put("bulidactually", jisuanNum(firstLi.get("itemactually"), secondeLi.get("completeactually"),
-						thirdLi.get("bulidactually")));
+				fourLi.put("planningNum",jhz == null ? 0 : formatNum(jhz.get("xmzs")));
+				fourLi.put("buliddesign", jhz == null ? 0 : formatNum(jhz.get("xmztz")));
+				fourLi.put("bulidactually",  jhz == null ? 0 : formatNum(jhz.get("sjljtz")));
 				fourLi.put("jszt", "计划中");
 				parentList.add(fourLi);
 				item.put("list", parentList);
