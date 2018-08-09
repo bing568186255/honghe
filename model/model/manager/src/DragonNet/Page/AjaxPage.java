@@ -195,11 +195,11 @@ public class AjaxPage extends HttpServlet {
 		if (StringUtils.isNotBlank(jszt))
 			hm.put("jszt", buildQueryList(URLDecoder.decode(jszt)));
 		if (StringUtils.isNotBlank(xmsx))
-			hm.put("xmsx", buildQueryList(xmsx));
+			hm.put("xmsx", buildQueryList(URLDecoder.decode(xmsx)));
 		if (StringUtils.isNotBlank(xmyt))
-			hm.put("xmyt", buildQueryList(xmyt));
+			hm.put("xmyt", buildQueryList(URLDecoder.decode(xmyt)));
 		if (StringUtils.isNotBlank(xmxz))
-			hm.put("xmxz", buildQueryList(xmxz));
+			hm.put("xmxz", buildQueryList(URLDecoder.decode(xmxz)));
 		List<HashMap> listLYXMTotal = DBOperate.getLYXMTotal(hm);
 		// 返回的区县数据
 		List<HashMap<String, Object>> positionReturn = new ArrayList<>();
