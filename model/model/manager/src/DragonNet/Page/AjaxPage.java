@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -192,7 +193,7 @@ public class AjaxPage extends HttpServlet {
 		if (StringUtils.isNotBlank(qxbm))
 			hm.put("qxbm", buildQueryList(qxbm));
 		if (StringUtils.isNotBlank(jszt))
-			hm.put("jszt", buildQueryList(jszt));
+			hm.put("jszt", buildQueryList(URLDecoder.decode(jszt)));
 		if (StringUtils.isNotBlank(xmsx))
 			hm.put("xmsx", buildQueryList(xmsx));
 		if (StringUtils.isNotBlank(xmyt))
