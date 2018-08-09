@@ -190,10 +190,13 @@ public class AjaxPage extends HttpServlet {
 		String xmyt = (String) request.getParameter("xmyt");
 		String xmxz = (String) request.getParameter("xmxz");
 		HashMap hm = new HashMap();
+		List<String> jsztList = new ArrayList<>();
 		if (StringUtils.isNotBlank(qxbm))
 			hm.put("qxbm", buildQueryList(qxbm));
-		if (StringUtils.isNotBlank(jszt))
-			hm.put("jszt", buildQueryList(URLDecoder.decode(jszt)));
+		if (StringUtils.isNotBlank(jszt)){
+			jsztList = buildQueryList(URLDecoder.decode(jszt));
+			hm.put("jszt", jsztList);
+		}
 		if (StringUtils.isNotBlank(xmsx))
 			hm.put("xmsx", buildQueryList(URLDecoder.decode(xmsx)));
 		if (StringUtils.isNotBlank(xmyt))
@@ -232,31 +235,55 @@ public class AjaxPage extends HttpServlet {
 				firstLi.put("jszt", "");
 				parentList.add(firstLi);
 				HashMap<String, Object> secondeLi = new HashMap<>();
-				hm.put("jszt", "已完成");
-				HashMap wgs = DBOperate.getLYXMWGS(hm);
-				secondeLi.put("completename", "完工数");
-				secondeLi.put("completeNum", wgs == null ? 0 : formatNum(wgs.get("xmzs")));
-				secondeLi.put("completedesign", wgs == null ? 0 : formatNum(wgs.get("xmztz")));
-				secondeLi.put("completeactually", wgs == null ? 0 : formatNum(wgs.get("sjljtz")));
-				secondeLi.put("jszt", "已完成");
+				if(!CollectionUtils.isEmpty(jsztList) && !jsztList.contains("已完成")){
+					secondeLi.put("completename", "完工数");
+					secondeLi.put("completeNum",0);
+					secondeLi.put("completedesign", 0);
+					secondeLi.put("completeactually",0);
+					secondeLi.put("jszt", "已完成");
+				}else{
+					hm.put("jszt", "已完成");
+					HashMap wgs = DBOperate.getLYXMWGS(hm);
+					secondeLi.put("completename", "完工数");
+					secondeLi.put("completeNum", wgs == null ? 0 : formatNum(wgs.get("xmzs")));
+					secondeLi.put("completedesign", wgs == null ? 0 : formatNum(wgs.get("xmztz")));
+					secondeLi.put("completeactually", wgs == null ? 0 : formatNum(wgs.get("sjljtz")));
+					secondeLi.put("jszt", "已完成");
+				}
 				parentList.add(secondeLi);
 				HashMap<String, Object> thirdLi = new HashMap<>();
-				hm.put("jszt", "建设中");
-				HashMap wwc = DBOperate.getLYXMWGS(hm);
-				thirdLi.put("bulidname", "建设数量");
-				thirdLi.put("bulidNum", wwc == null ? 0 : formatNum(wwc.get("xmzs")));
-				thirdLi.put("buliddesign", wwc == null ? 0 : formatNum(wwc.get("xmztz")));
-				thirdLi.put("bulidactually", wwc == null ? 0 : formatNum(wwc.get("sjljtz")));
-				thirdLi.put("jszt", "建设中");
+				if(!CollectionUtils.isEmpty(jsztList) && !jsztList.contains("建设中")){
+					thirdLi.put("bulidname", "建设数量");
+					thirdLi.put("bulidNum", 0);
+					thirdLi.put("buliddesign", 0);
+					thirdLi.put("bulidactually",0);
+					thirdLi.put("jszt", "建设中");
+				}else{
+					hm.put("jszt", "建设中");
+					HashMap wwc = DBOperate.getLYXMWGS(hm);
+					thirdLi.put("bulidname", "建设数量");
+					thirdLi.put("bulidNum", wwc == null ? 0 : formatNum(wwc.get("xmzs")));
+					thirdLi.put("buliddesign", wwc == null ? 0 : formatNum(wwc.get("xmztz")));
+					thirdLi.put("bulidactually", wwc == null ? 0 : formatNum(wwc.get("sjljtz")));
+					thirdLi.put("jszt", "建设中");
+				}
 				parentList.add(thirdLi);
 				HashMap<String, Object> fourLi = new HashMap<>();
-				hm.put("jszt", "计划中");
-				HashMap jhz = DBOperate.getLYXMWGS(hm);
-				fourLi.put("planningname", "计划数量");
-				fourLi.put("planningNum",jhz == null ? 0 : formatNum(jhz.get("xmzs")));
-				fourLi.put("buliddesign", jhz == null ? 0 : formatNum(jhz.get("xmztz")));
-				fourLi.put("bulidactually",  jhz == null ? 0 : formatNum(jhz.get("sjljtz")));
-				fourLi.put("jszt", "计划中");
+				if(!CollectionUtils.isEmpty(jsztList) && !jsztList.contains("计划中")){
+					fourLi.put("planningname", "计划数量");
+					fourLi.put("planningNum",0);
+					fourLi.put("buliddesign", 0);
+					fourLi.put("bulidactually",0);
+					fourLi.put("jszt", "计划中");
+				}else{
+					hm.put("jszt", "计划中");
+					HashMap jhz = DBOperate.getLYXMWGS(hm);
+					fourLi.put("planningname", "计划数量");
+					fourLi.put("planningNum",jhz == null ? 0 : formatNum(jhz.get("xmzs")));
+					fourLi.put("buliddesign", jhz == null ? 0 : formatNum(jhz.get("xmztz")));
+					fourLi.put("bulidactually",  jhz == null ? 0 : formatNum(jhz.get("sjljtz")));
+					fourLi.put("jszt", "计划中");
+				}
 				parentList.add(fourLi);
 				item.put("list", parentList);
 				index++;
@@ -264,6 +291,10 @@ public class AjaxPage extends HttpServlet {
 				hm.remove("jszt");
 			/*	if (StringUtils.isNotBlank(jszt))
 					hm.put("jszt", jszt);*/
+				if (StringUtils.isNotBlank(jszt)){
+					jsztList = buildQueryList(URLDecoder.decode(jszt));
+					hm.put("jszt", jsztList);
+				}
 				List<HashMap> listLYXM = DBOperate.getLYXMGL(hm);
 				if (!CollectionUtils.isEmpty(listLYXM)) {
 					List<HashMap<String, Object>> subList = new ArrayList<>();
