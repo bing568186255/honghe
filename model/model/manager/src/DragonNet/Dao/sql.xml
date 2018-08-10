@@ -4,7 +4,7 @@
     "http://ibatis.apache.org/dtd/sql-map-2.dtd">  
 <sqlMap> 
 	<select id="getXMSTJ" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
-		select b."bm" ,b."mc" as "qxmc" ,a."xms" from 
+		select b."bm" ,b."mc" as "qxmc" ,nvl(a."xms",0) as "xms" from 
 		"XXDY" b  
 		left join 
 		(select "qxbm"  , count("xmid") as  "xms"  FROM  "LYXM"  GROUP BY "qxbm") a 
@@ -12,7 +12,7 @@
 	</select>
 		
 	<select id="getXMMJTJ" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
-		select b."bm", b."mc" as "qxmc",a."xmmj"   from 
+		select b."bm", b."mc" as "qxmc",nvl(a."xmmj",0) as "xmmj"   from 
 		 "XXDY" b  		
 		left join 
 		(select "qxbm" AS "qxbm" , sum("ghyd")as "xmmj" FROM "LYXM" group by "qxbm") a 
