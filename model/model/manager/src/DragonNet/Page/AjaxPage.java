@@ -398,6 +398,9 @@ public class AjaxPage extends HttpServlet {
 	 * @throws IOException
 	 */
 	public static String[] getCoordinate(String addr) throws IOException {
+		if("泸西县".equals(addr)){
+			return new String[] { "103.766196", "24.532025" };
+		}
 		String lng = null;// 经度
 		String lat = null;// 纬度
 		String address = null;
