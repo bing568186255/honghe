@@ -184,16 +184,18 @@ public class AjaxPage extends HttpServlet {
 	public void lvxmXR(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HashMap hmRet = new HashMap();
 		checkUser(request, response);
-		String qxbm = (String) request.getParameter("qxbm");
+		// String qxbm = (String) request.getParameter("qxbm");
 		String jszt = (String) request.getParameter("jszt");
 		String xmsx = (String) request.getParameter("xmsx");
 		String xmyt = (String) request.getParameter("xmyt");
 		String xmxz = (String) request.getParameter("xmxz");
 		HashMap hm = new HashMap();
 		List<String> jsztList = new ArrayList<>();
-		if (StringUtils.isNotBlank(qxbm))
-			hm.put("qxbm", buildQueryList(qxbm));
-		if (StringUtils.isNotBlank(jszt)){
+		/*
+		 * if (StringUtils.isNotBlank(qxbm)) hm.put("qxbm",
+		 * buildQueryList(qxbm));
+		 */
+		if (StringUtils.isNotBlank(jszt)) {
 			jsztList = buildQueryList(URLDecoder.decode(jszt));
 			hm.put("jszt", jsztList);
 		}
@@ -203,159 +205,178 @@ public class AjaxPage extends HttpServlet {
 			hm.put("xmyt", buildQueryList(URLDecoder.decode(xmyt)));
 		if (StringUtils.isNotBlank(xmxz))
 			hm.put("xmxz", buildQueryList(URLDecoder.decode(xmxz)));
-		List<HashMap> listLYXMTotal = DBOperate.getLYXMTotal(hm);
-		// 返回的区县数据
-		List<HashMap<String, Object>> positionReturn = new ArrayList<>();
-		if (!CollectionUtils.isEmpty(listLYXMTotal)) {
-			int index = 1;
-			for (HashMap map : listLYXMTotal) {
-				// 查询区县名称；
-				hm.put("qxbm", map.get("qxbm"));
-				List<HashMap> qxList = DBOperate.getQXinfo(hm);
-				if (!CollectionUtils.isEmpty(qxList)) {
-					map.put("qxmc", qxList.get(0).get("mc"));
-				}
+		List<HashMap> qxList = DBOperate.getQXinfo(hm);
+		if (CollectionUtils.isNotEmpty(qxList)) {
+			List<HashMap<String, Object>> positionReturn = new ArrayList<>();
+			for (HashMap qxmap : qxList) {
+				hm.put("qxbm", qxmap.get("bm"));
+				List<HashMap> listLYXMTotal = DBOperate.getLYXMTotal(hm);
+				HashMap map = new HashMap<>();
+				map.put("qxmc", qxmap.get("mc"));
 				HashMap item = new HashMap();
 				HashMap position = new HashMap();
-				String[] s = getCoordinate(map.get("qxmc").toString());
-				position.put("longitude", s[0]);
-				position.put("latitude", s[1]);
-				item.put("position", position);
-				item.put("title", map.get("qxmc"));
-				item.put("xmsl", formatNum(map.get("xmzs")));
-				item.put("qxbm", map.get("qxbm"));
-				List<HashMap<String, Object>> parentList = new ArrayList<>();
-				// 项目总数
-				HashMap<String, Object> firstLi = new HashMap<>();
-				firstLi.put("id", index);
-				firstLi.put("itemname", "项目数量");
-				firstLi.put("itemcount", formatNum(map.get("xmzs")));
-				firstLi.put("itemdesign", formatNum(map.get("xmztz")));
-				firstLi.put("itemactually", formatNum(map.get("sjljtz")));
-				firstLi.put("jszt", "");
-				parentList.add(firstLi);
-				HashMap<String, Object> secondeLi = new HashMap<>();
-				if(!CollectionUtils.isEmpty(jsztList) && !jsztList.contains("已完成")){
-					secondeLi.put("completename", "完工数");
-					secondeLi.put("completeNum",0);
-					secondeLi.put("completedesign", 0);
-					secondeLi.put("completeactually",0);
-					secondeLi.put("jszt", "已完成");
-				}else{
-					hm.put("jszt", "已完成");
-					HashMap wgs = DBOperate.getLYXMWGS(hm);
-					secondeLi.put("completename", "完工数");
-					secondeLi.put("completeNum", wgs == null ? 0 : formatNum(wgs.get("xmzs")));
-					secondeLi.put("completedesign", wgs == null ? 0 : formatNum(wgs.get("xmztz")));
-					secondeLi.put("completeactually", wgs == null ? 0 : formatNum(wgs.get("sjljtz")));
-					secondeLi.put("jszt", "已完成");
+				try {
+					String[] s = getCoordinate(qxmap.get("mc").toString());
+					position.put("longitude", s[0]);
+					position.put("latitude", s[1]);
+					item.put("position", position);
+				} catch (Exception e) {
+					
 				}
-				parentList.add(secondeLi);
-				HashMap<String, Object> thirdLi = new HashMap<>();
-				if(!CollectionUtils.isEmpty(jsztList) && !jsztList.contains("建设中")){
-					thirdLi.put("bulidname", "建设数量");
-					thirdLi.put("bulidNum", 0);
-					thirdLi.put("buliddesign", 0);
-					thirdLi.put("bulidactually",0);
-					thirdLi.put("jszt", "建设中");
-				}else{
-					hm.put("jszt", "建设中");
-					HashMap wwc = DBOperate.getLYXMWGS(hm);
-					thirdLi.put("bulidname", "建设数量");
-					thirdLi.put("bulidNum", wwc == null ? 0 : formatNum(wwc.get("xmzs")));
-					thirdLi.put("buliddesign", wwc == null ? 0 : formatNum(wwc.get("xmztz")));
-					thirdLi.put("bulidactually", wwc == null ? 0 : formatNum(wwc.get("sjljtz")));
-					thirdLi.put("jszt", "建设中");
-				}
-				parentList.add(thirdLi);
-				HashMap<String, Object> fourLi = new HashMap<>();
-				if(!CollectionUtils.isEmpty(jsztList) && !jsztList.contains("计划中")){
-					fourLi.put("planningname", "计划数量");
-					fourLi.put("planningNum",0);
-					fourLi.put("buliddesign", 0);
-					fourLi.put("bulidactually",0);
-					fourLi.put("jszt", "计划中");
-				}else{
-					hm.put("jszt", "计划中");
-					HashMap jhz = DBOperate.getLYXMWGS(hm);
-					fourLi.put("planningname", "计划数量");
-					fourLi.put("planningNum",jhz == null ? 0 : formatNum(jhz.get("xmzs")));
-					fourLi.put("buliddesign", jhz == null ? 0 : formatNum(jhz.get("xmztz")));
-					fourLi.put("bulidactually",  jhz == null ? 0 : formatNum(jhz.get("sjljtz")));
-					fourLi.put("jszt", "计划中");
-				}
-				parentList.add(fourLi);
-				item.put("list", parentList);
-				index++;
-				// 县下面旅游项目集合构建
-				hm.remove("jszt");
-			/*	if (StringUtils.isNotBlank(jszt))
-					hm.put("jszt", jszt);*/
-				if (StringUtils.isNotBlank(jszt)){
-					jsztList = buildQueryList(URLDecoder.decode(jszt));
-					hm.put("jszt", jsztList);
-				}
-				List<HashMap> listLYXM = DBOperate.getLYXMGL(hm);
-				if (!CollectionUtils.isEmpty(listLYXM)) {
-					List<HashMap<String, Object>> subList = new ArrayList<>();
-					int ii = 1;
-					for (HashMap hMap : listLYXM) {
-						if (hMap != null) {
-							HashMap subItem = new HashMap();
-							String[] positionArray = hMap.get("xmzb").toString().split(",");
-							HashMap subPosition = new HashMap();
-							subPosition.put("longitude", positionArray[0]);
-							subPosition.put("latitude", positionArray[1]);
-							subItem.put("position", subPosition);
-							subItem.put("title", hMap.get("xmm"));
-							subItem.put("jszt", hMap.get("jszt"));
-							subItem.put("ztz", hMap.get("ztz"));
-							List<HashMap<String, Object>> subTKList = new ArrayList<>();
-							HashMap<String, Object> subFirstLi = new HashMap<>();
-							subFirstLi.put("id", ii);
-							subFirstLi.put("itemnature", hMap.get("xmgk"));
-							subFirstLi.put("itemtype", hMap.get("xmlx"));
-							subFirstLi.put("itmeproperty", hMap.get("xmsx"));
-							subFirstLi.put("itemformat", hMap.get("xmyt"));
-							subFirstLi.put("planningland", hMap.get("ghyd"));
-							subFirstLi.put("importantitem", hMap.get("xmxz"));
-							subFirstLi.put("itemstate", hMap.get("jszt"));
-							subTKList.add(subFirstLi);
-							HashMap<String, Object> subSecondeLi = new HashMap<>();
-							subSecondeLi.put("completename", "项目类型");
-							subSecondeLi.put("completeNum", "");
-							subSecondeLi.put("completedesign", "");
-							subSecondeLi.put("completeactually", "");
-							subTKList.add(subSecondeLi);
-							HashMap<String, Object> subThirdLi = new HashMap<>();
-							subThirdLi.put("bulidname", "项目业态");
-							subThirdLi.put("bulidNum", "");
-							subThirdLi.put("buliddesign", "");
-							subThirdLi.put("bulidactually", "");
-							subTKList.add(subThirdLi);
-							HashMap<String, Object> subFourLi = new HashMap<>();
-							subFourLi.put("planningname", "项目建设状态");
-							subFourLi.put("planningNum", "");
-							subFourLi.put("buliddesign", "");
-							subFourLi.put("bulidactually", "");
-							subTKList.add(subFourLi);
-							subItem.put("list", subTKList);
-							subList.add(subItem);
-							ii++;
-						}
+				item.put("title", qxmap.get("mc"));
+				item.put("xmsl", 0);
+				item.put("qxbm", qxmap.get("bm"));
+				// 返回的区县数据
+				if (!CollectionUtils.isEmpty(listLYXMTotal)) {
+					int index = 1;
+					// for (HashMap map : listLYXMTotal) {
+					// 查询区县名称；
+					/*
+					 * hm.put("qxbm", map.get("qxbm")); List<HashMap> qxList =
+					 * DBOperate.getQXinfo(hm);
+					 */
+					/*
+					 * if (!CollectionUtils.isEmpty(qxList)) { }
+					 */
+					HashMap totalMap = listLYXMTotal.get(0);
+					map.putAll(totalMap);
+					item.put("xmsl", formatNum(map.get("xmzs")));
+					List<HashMap<String, Object>> parentList = new ArrayList<>();
+					// 项目总数
+					HashMap<String, Object> firstLi = new HashMap<>();
+					firstLi.put("id", index);
+					firstLi.put("itemname", "项目数量");
+					firstLi.put("itemcount", formatNum(map.get("xmzs")));
+					firstLi.put("itemdesign", formatNum(map.get("xmztz")));
+					firstLi.put("itemactually", formatNum(map.get("sjljtz")));
+					firstLi.put("jszt", "");
+					parentList.add(firstLi);
+					HashMap<String, Object> secondeLi = new HashMap<>();
+					if (!CollectionUtils.isEmpty(jsztList) && !jsztList.contains("已完成")) {
+						secondeLi.put("completename", "完工数");
+						secondeLi.put("completeNum", 0);
+						secondeLi.put("completedesign", 0);
+						secondeLi.put("completeactually", 0);
+						secondeLi.put("jszt", "已完成");
+					} else {
+						hm.put("jszt", "已完成");
+						HashMap wgs = DBOperate.getLYXMWGS(hm);
+						secondeLi.put("completename", "完工数");
+						secondeLi.put("completeNum", wgs == null ? 0 : formatNum(wgs.get("xmzs")));
+						secondeLi.put("completedesign", wgs == null ? 0 : formatNum(wgs.get("xmztz")));
+						secondeLi.put("completeactually", wgs == null ? 0 : formatNum(wgs.get("sjljtz")));
+						secondeLi.put("jszt", "已完成");
 					}
-					item.put("subList", subList);
+					parentList.add(secondeLi);
+					HashMap<String, Object> thirdLi = new HashMap<>();
+					if (!CollectionUtils.isEmpty(jsztList) && !jsztList.contains("建设中")) {
+						thirdLi.put("bulidname", "建设数量");
+						thirdLi.put("bulidNum", 0);
+						thirdLi.put("buliddesign", 0);
+						thirdLi.put("bulidactually", 0);
+						thirdLi.put("jszt", "建设中");
+					} else {
+						hm.put("jszt", "建设中");
+						HashMap wwc = DBOperate.getLYXMWGS(hm);
+						thirdLi.put("bulidname", "建设数量");
+						thirdLi.put("bulidNum", wwc == null ? 0 : formatNum(wwc.get("xmzs")));
+						thirdLi.put("buliddesign", wwc == null ? 0 : formatNum(wwc.get("xmztz")));
+						thirdLi.put("bulidactually", wwc == null ? 0 : formatNum(wwc.get("sjljtz")));
+						thirdLi.put("jszt", "建设中");
+					}
+					parentList.add(thirdLi);
+					HashMap<String, Object> fourLi = new HashMap<>();
+					if (!CollectionUtils.isEmpty(jsztList) && !jsztList.contains("计划中")) {
+						fourLi.put("planningname", "计划数量");
+						fourLi.put("planningNum", 0);
+						fourLi.put("buliddesign", 0);
+						fourLi.put("bulidactually", 0);
+						fourLi.put("jszt", "计划中");
+					} else {
+						hm.put("jszt", "计划中");
+						HashMap jhz = DBOperate.getLYXMWGS(hm);
+						fourLi.put("planningname", "计划数量");
+						fourLi.put("planningNum", jhz == null ? 0 : formatNum(jhz.get("xmzs")));
+						fourLi.put("buliddesign", jhz == null ? 0 : formatNum(jhz.get("xmztz")));
+						fourLi.put("bulidactually", jhz == null ? 0 : formatNum(jhz.get("sjljtz")));
+						fourLi.put("jszt", "计划中");
+					}
+					parentList.add(fourLi);
+					item.put("list", parentList);
+					index++;
+					// 县下面旅游项目集合构建
+					hm.remove("jszt");
+					/*
+					 * if (StringUtils.isNotBlank(jszt)) hm.put("jszt", jszt);
+					 */
+					if (StringUtils.isNotBlank(jszt)) {
+						jsztList = buildQueryList(URLDecoder.decode(jszt));
+						hm.put("jszt", jsztList);
+					}
+					List<HashMap> listLYXM = DBOperate.getLYXMGL(hm);
+					if (!CollectionUtils.isEmpty(listLYXM)) {
+						List<HashMap<String, Object>> subList = new ArrayList<>();
+						int ii = 1;
+						for (HashMap hMap : listLYXM) {
+							if (hMap != null) {
+								HashMap subItem = new HashMap();
+								String[] positionArray = hMap.get("xmzb").toString().split(",");
+								HashMap subPosition = new HashMap();
+								subPosition.put("longitude", positionArray[0]);
+								subPosition.put("latitude", positionArray[1]);
+								subItem.put("position", subPosition);
+								subItem.put("title", hMap.get("xmm"));
+								subItem.put("jszt", hMap.get("jszt"));
+								subItem.put("ztz", hMap.get("ztz"));
+								List<HashMap<String, Object>> subTKList = new ArrayList<>();
+								HashMap<String, Object> subFirstLi = new HashMap<>();
+								subFirstLi.put("id", ii);
+								subFirstLi.put("itemnature", hMap.get("xmgk"));
+								subFirstLi.put("itemtype", hMap.get("xmlx"));
+								subFirstLi.put("itmeproperty", hMap.get("xmsx"));
+								subFirstLi.put("itemformat", hMap.get("xmyt"));
+								subFirstLi.put("planningland", hMap.get("ghyd"));
+								subFirstLi.put("importantitem", hMap.get("xmxz"));
+								subFirstLi.put("itemstate", hMap.get("jszt"));
+								subTKList.add(subFirstLi);
+								HashMap<String, Object> subSecondeLi = new HashMap<>();
+								subSecondeLi.put("completename", "项目类型");
+								subSecondeLi.put("completeNum", "");
+								subSecondeLi.put("completedesign", "");
+								subSecondeLi.put("completeactually", "");
+								subTKList.add(subSecondeLi);
+								HashMap<String, Object> subThirdLi = new HashMap<>();
+								subThirdLi.put("bulidname", "项目业态");
+								subThirdLi.put("bulidNum", "");
+								subThirdLi.put("buliddesign", "");
+								subThirdLi.put("bulidactually", "");
+								subTKList.add(subThirdLi);
+								HashMap<String, Object> subFourLi = new HashMap<>();
+								subFourLi.put("planningname", "项目建设状态");
+								subFourLi.put("planningNum", "");
+								subFourLi.put("buliddesign", "");
+								subFourLi.put("bulidactually", "");
+								subTKList.add(subFourLi);
+								subItem.put("list", subTKList);
+								subList.add(subItem);
+								ii++;
+							}
+						}
+						item.put("subList", subList);
+					}
+					//}
 				}
 				positionReturn.add(item);
 			}
+			// List<HashMap> listLYXM = DBOperate.getLYXMGL(hm);
+			hmRet.remove("jszt");
+			hmRet.remove("qxbm");
+			hmRet.put("status", 200);
+			hmRet.put("rows", positionReturn);
+			String json = JSONObject.fromObject(hmRet).toString();
+			response.getOutputStream().write(json.getBytes("UTF-8"));
+
 		}
-		// List<HashMap> listLYXM = DBOperate.getLYXMGL(hm);
-		hmRet.remove("jszt");
-		hmRet.remove("qxbm");
-		hmRet.put("status", 200);
-		hmRet.put("rows", positionReturn);
-		String json = JSONObject.fromObject(hmRet).toString();
-		response.getOutputStream().write(json.getBytes("UTF-8"));
 	}
 
 	private int formatNum(Object obj) {

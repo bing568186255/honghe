@@ -69,7 +69,7 @@ public class DBOperate {
 		return hmList;
 	}
 
-	// 1.2 各区县项目概览展示接口(项目数)
+	// 1.1 各区县项目概览展示接口(项目数)
 	public static List<HashMap> getLYXMTotal(HashMap hm) {
 		List<HashMap> hmList = null;
 		try {
@@ -91,16 +91,16 @@ public class DBOperate {
 		}
 		return wgs;
 	}
-	
+
 	// 1.3查询区县信息
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		public static List<HashMap>  getQXinfo(HashMap hm) {
-			List<HashMap> hmList = null;
-			try {
-				hmList =  sqlMapClient.queryForList("getQXinfo", hm);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			return hmList;
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static List<HashMap> getQXinfo(HashMap hm) {
+		List<HashMap> hmList = null;
+		try {
+			hmList = sqlMapClient.queryForList("getQXinfo", hm);
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
+		return hmList;
+	}
 }

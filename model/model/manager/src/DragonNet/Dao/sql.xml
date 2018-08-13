@@ -1,34 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE sqlMap        
     PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"        
-    "http://ibatis.apache.org/dtd/sql-map-2.dtd">  
-<sqlMap> 
-	<select id="getXMSTJ" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
-		select b."bm" ,b."mc" as "qxmc" ,nvl(a."xms",0) as "xms" from 
-		"XXDY" b  
-		left join 
-		(select "qxbm"  , count("xmid") as  "xms"  FROM  "LYXM"  GROUP BY "qxbm") a 
-		 on a."qxbm" = b."bm"
-	</select>
-		
-	<select id="getXMMJTJ" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
-		select b."bm", b."mc" as "qxmc",nvl(a."xmmj",0) as "xmmj"   from 
-		 "XXDY" b  		
-		left join 
-		(select "qxbm" AS "qxbm" , sum("ghyd")as "xmmj" FROM "LYXM" group by "qxbm") a 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap>
+	<select id="getXMSTJ" parameterClass="java.util.HashMap"
+		resultClass="java.util.HashMap">
+		select b."bm" ,b."mc" as "qxmc" ,nvl(a."xms",0) as "xms"
+		from
+		"XXDY" b
+		left join
+		(select "qxbm" , count("xmid") as "xms" FROM "LYXM" GROUP BY "qxbm") a
 		on a."qxbm" = b."bm"
 	</select>
-	
-	<select id="getJSZTTJ" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
-		 select 
+
+	<select id="getXMMJTJ" parameterClass="java.util.HashMap"
+		resultClass="java.util.HashMap">
+		select b."bm", b."mc" as "qxmc",nvl(a."xmmj",0) as "xmmj"
+		from
+		"XXDY" b
+		left join
+		(select "qxbm" AS "qxbm" , sum("ghyd")as "xmmj" FROM "LYXM" group by "qxbm")
+		a
+		on a."qxbm" = b."bm"
+	</select>
+
+	<select id="getJSZTTJ" parameterClass="java.util.HashMap"
+		resultClass="java.util.HashMap">
+		select
 		"jszt" AS "jszt"
 		, count("xmid")as "xms"
 		FROM "LYXM"
 		group by "jszt"
 	</select>
-		
-	<select id="getXMSXTJ" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
-		select 
+
+	<select id="getXMSXTJ" parameterClass="java.util.HashMap"
+		resultClass="java.util.HashMap">
+		select
 		"xmsx" AS "xmsx"
 		, count("xmid")as "xms"
 		FROM "LYXM"
@@ -36,138 +43,137 @@
 	</select>
 
 
-   <select id="getLYXM" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
-    	select *
+	<select id="getLYXM" parameterClass="java.util.HashMap"
+		resultClass="java.util.HashMap">
+		select *
 		FROM "LYXM"
 		<dynamic prepend="where">
 			<isPropertyAvailable prepend="and" property="type">
-			"xmdz"=#type#
+				"xmdz"=#type#
 			</isPropertyAvailable>
 			<isPropertyAvailable prepend="and" property="id">
-			"qxbm"=#id#
+				"qxbm"=#id#
 			</isPropertyAvailable>
 		</dynamic>
-  	</select>
-  	
-  	 <select id="getLYXMGL" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
-    	select *
+	</select>
+
+	<select id="getLYXMGL" parameterClass="java.util.HashMap"
+		resultClass="java.util.HashMap">
+		select *
 		FROM "LYXM"
 		<dynamic prepend="where">
 			<isPropertyAvailable prepend="and" property="qxbm">
-			"qxbm"=#qxbm#
+				"qxbm"=#qxbm#
 			</isPropertyAvailable>
 			<isPropertyAvailable prepend="and" property="jszt">
-			"jszt" in 
-				 <iterate open=" (" close=")" conjunction="," property="jszt">
+				"jszt" in
+				<iterate open=" (" close=")" conjunction="," property="jszt">
 					#jszt[]#
-				 </iterate>
+				</iterate>
 			</isPropertyAvailable>
 			<isPropertyAvailable prepend="and" property="xmsx">
-			"xmsx" in 
-				 <iterate open=" (" close=")" conjunction="," property="xmsx">
+				"xmsx" in
+				<iterate open=" (" close=")" conjunction="," property="xmsx">
 					#xmsx[]#
-				 </iterate>
+				</iterate>
 			</isPropertyAvailable>
 			<isPropertyAvailable prepend="and" property="xmyt">
-			"xmyt" in 
-				 <iterate open=" (" close=")" conjunction="," property="xmyt">
+				"xmyt" in
+				<iterate open=" (" close=")" conjunction="," property="xmyt">
 					#xmyt[]#
-				 </iterate>
+				</iterate>
 			</isPropertyAvailable>
 			<isPropertyAvailable prepend="and" property="xmxz">
-			"xmxz"  in 
-				 <iterate open=" (" close=")" conjunction="," property="xmxz">
+				"xmxz" in
+				<iterate open=" (" close=")" conjunction="," property="xmxz">
 					#xmxz[]#
-				 </iterate>
+				</iterate>
 			</isPropertyAvailable>
 		</dynamic>
-		<!-- <dynamic prepend="where">
-			<isPropertyAvailable prepend="and" property="qxbm">
-			"qxbm"=#qxbm#
-			</isPropertyAvailable>
-			<isPropertyAvailable prepend="and" property="jszt">
-			"jszt"=#jszt#
-			</isPropertyAvailable>
-			<isPropertyAvailable prepend="and" property="xmsx">
-			"xmsx"=#xmsx#
-			</isPropertyAvailable>
-			<isPropertyAvailable prepend="and" property="xmyt">
-			"xmyt"=#xmyt#
-			</isPropertyAvailable>
-			<isPropertyAvailable prepend="and" property="xmxz">
-			"xmxz"=#xmxz#
-			</isPropertyAvailable>
-		</dynamic> -->
-  	</select>
-  	
-  	<select id="getLYXMTotal" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
-    	SELECT
-    		"qxbm" AS "qxbm",
-			COUNT (*) AS "xmzs",
-			SUM ("ztz") AS "xmztz",
-			SUM ("sjljtz") AS "sjljtz",
-			SUM ("jsyd") AS "jssl",
-			SUM ("ghyd") AS "ghsl"
+		<!-- <dynamic prepend="where"> <isPropertyAvailable prepend="and" property="qxbm"> 
+			"qxbm"=#qxbm# </isPropertyAvailable> <isPropertyAvailable prepend="and" property="jszt"> 
+			"jszt"=#jszt# </isPropertyAvailable> <isPropertyAvailable prepend="and" property="xmsx"> 
+			"xmsx"=#xmsx# </isPropertyAvailable> <isPropertyAvailable prepend="and" property="xmyt"> 
+			"xmyt"=#xmyt# </isPropertyAvailable> <isPropertyAvailable prepend="and" property="xmxz"> 
+			"xmxz"=#xmxz# </isPropertyAvailable> </dynamic> -->
+	</select>
+
+	<select id="getLYXMTotal" parameterClass="java.util.HashMap"
+		resultClass="java.util.HashMap">
+		SELECT
+		"qxbm" AS "qxbm",
+		COUNT (*) AS "xmzs",
+		SUM ("ztz") AS "xmztz",
+		SUM ("sjljtz") AS "sjljtz",
+		SUM ("jsyd") AS "jssl",
+		SUM ("ghyd") AS "ghsl"
 		FROM
-			"LYXM"
+		"LYXM"
 		<dynamic prepend="where">
-			<isPropertyAvailable  prepend="and" property="qxbm">
-			"qxbm" in 
-				 <iterate open=" (" close=")" conjunction="," property="qxbm">
+			<isPropertyAvailable prepend="and" property="qxbm">
+				"qxbm" = #qxbm#
+				<!-- "qxbm" in
+				<iterate open=" (" close=")" conjunction="," property="qxbm">
 					#qxbm[]#
-				 </iterate>
+				</iterate> -->
 			</isPropertyAvailable>
 			<isPropertyAvailable prepend="and" property="jszt">
-			"jszt" in 
-				 <iterate open=" (" close=")" conjunction="," property="jszt">
+				"jszt" in
+				<iterate open=" (" close=")" conjunction="," property="jszt">
 					#jszt[]#
-				 </iterate>
+				</iterate>
 			</isPropertyAvailable>
 			<isPropertyAvailable prepend="and" property="xmsx">
-			"xmsx" in 
-				 <iterate open=" (" close=")" conjunction="," property="xmsx">
+				"xmsx" in
+				<iterate open=" (" close=")" conjunction="," property="xmsx">
 					#xmsx[]#
-				 </iterate>
+				</iterate>
 			</isPropertyAvailable>
 			<isPropertyAvailable prepend="and" property="xmyt">
-			"xmyt" in 
-				 <iterate open=" (" close=")" conjunction="," property="xmyt">
+				"xmyt" in
+				<iterate open=" (" close=")" conjunction="," property="xmyt">
 					#xmyt[]#
-				 </iterate>
+				</iterate>
 			</isPropertyAvailable>
 			<isPropertyAvailable prepend="and" property="xmxz">
-			"xmxz"  in 
-				 <iterate open=" (" close=")" conjunction="," property="xmxz">
+				"xmxz" in
+				<iterate open=" (" close=")" conjunction="," property="xmxz">
 					#xmxz[]#
-				 </iterate>
+				</iterate>
 			</isPropertyAvailable>
 		</dynamic>
 		group by "qxbm"
-  	</select>
-  	
-  	<select id="getLYXMWGS" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
-    	SELECT
-			COUNT (*) AS "xmzs",
-			SUM ("ztz") AS "xmztz",
-			SUM ("sjljtz") AS "sjljtz"
+	</select>
+
+	<select id="getLYXMWGS" parameterClass="java.util.HashMap"
+		resultClass="java.util.HashMap">
+		SELECT
+		COUNT (*) AS "xmzs",
+		SUM ("ztz") AS "xmztz",
+		SUM ("sjljtz") AS "sjljtz"
 		FROM
-			"LYXM"
+		"LYXM"
 		<dynamic prepend="where">
 			<isPropertyAvailable prepend="and" property="qxbm">
-			"qxbm"=#qxbm#
+				"qxbm"=#qxbm#
 			</isPropertyAvailable>
 			<isPropertyAvailable prepend="and" property="jszt">
-			"jszt"=#jszt#
+				"jszt"=#jszt#
 			</isPropertyAvailable>
 		</dynamic>
 		group by "qxbm"
-  	</select>
-  	
-  	<select id="getQXinfo" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
-    	SELECT
-			*
+	</select>
+
+	<select id="getQXinfo" parameterClass="java.util.HashMap"
+		resultClass="java.util.HashMap">
+		SELECT
+		*
 		FROM
-			"XXDY"
-		where "bm" = #qxbm#
-  	</select>
+		"XXDY"
+		<dynamic prepend="where">
+			<isPropertyAvailable prepend="and" property="qxbm">
+				"bm"=#qxbm#
+			</isPropertyAvailable>
+		</dynamic>
+	</select>
 </sqlMap>  
