@@ -176,4 +176,14 @@
 			</isPropertyAvailable>
 		</dynamic>
 	</select>
+	
+	<select id="getXMKFQK" parameterClass="java.util.HasmMap" resultClass="java.util.HashMap">
+		select
+		*
+		from 
+		"HHLY_XMKFQKTB"
+		<isPropertyAvailable prepend="and" property="id">
+		"id"=#id#
+		</isPropertyAvailable>
+	</select>
 </sqlMap>  

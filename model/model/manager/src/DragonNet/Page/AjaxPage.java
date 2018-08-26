@@ -120,6 +120,27 @@ public class AjaxPage extends HttpServlet {
 		}
 
 	}
+	
+	public void lvxmXMKFQK(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		HashMap hmRet = new HashMap();
+		checkUser(request, response);
+		String id = (String) request.getParameter("xmid");
+		HashMap hm = new HashMap();
+		if(id!=null) {
+			hm.put("id", id);
+			List<HashMap> listLYXM = DBOperate.getXMKFQK(hm);
+			hmRet.put("status", 200);
+			hmRet.put("rows", listLYXM);
+			String json = JSONObject.fromObject(hmRet).toString();
+			response.getOutputStream().write(json.getBytes("UTF-8"));
+		}else {
+			hmRet.put("status", 400);
+			hmRet.put("rows", null);
+			String json = JSONObject.fromObject(hmRet).toString();
+			response.getOutputStream().write(json.getBytes("UTF-8"));
+		}
+	}
+	
 
 	private List<String> buildQueryList(String obj) {
 		String[] sArray = obj.split(",");

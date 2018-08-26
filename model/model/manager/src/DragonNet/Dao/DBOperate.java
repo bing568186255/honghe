@@ -103,4 +103,15 @@ public class DBOperate {
 		}
 		return hmList;
 	}
+	
+	public static List<HashMap> getXMKFQK(HashMap hm){
+		List<HashMap> hmList = null;
+		try {
+			hmList = sqlMapClient.queryForList("getXMKFQK", hm);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return hmList;
+		
+	}
 }
