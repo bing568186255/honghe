@@ -33,14 +33,6 @@
 	<servlet-name>AjaxPage</servlet-name>
 	<url-pattern>/ajax.html</url-pattern>
   </servlet-mapping>
-   <servlet-mapping>
-	<servlet-name>AjaxWb</servlet-name>
-	<url-pattern>/ajaxWb.html</url-pattern>
-  </servlet-mapping>
-     <servlet-mapping>
-	<servlet-name>AjaxZww</servlet-name>
-	<url-pattern>/ajaxZww.html</url-pattern>
-  </servlet-mapping>
   <servlet-mapping>
 	<servlet-name>ActionPage</servlet-name>
 	<url-pattern>/action.html</url-pattern>
