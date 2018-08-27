@@ -470,6 +470,40 @@ public class AjaxPage extends HttpServlet {
 	public static void main(String[] args) throws IOException {
 		System.out.println(getCoordinate("红河县"));
 	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	public void xmDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HashMap hmRet = new HashMap();
+		checkUser(request, response);
+		String xmmc = (String) request.getParameter("xmmc");
+		if ( null == xmmc || xmmc.isEmpty()) {
+			hmRet.put("status", 400);
+			hmRet.put("msg", "参数错误！");
+			String json = JSONObject.fromObject(hmRet).toString();
+			response.getOutputStream().write(json.getBytes("UTF-8"));
+			return;
+		}
+		HashMap hm = new HashMap();
+		hm.put("xmmc", URLDecoder.decode(xmmc));
+		HashMap xmDetail = DBOperate.xmDetail(hm);
+		if(xmDetail != null && xmDetail.size()>0){
+			for(Object key: xmDetail.keySet()){
+				if(xmDetail.get(key) == null){
+					xmDetail.put(key, "");
+				}
+			}
+		}
+		hmRet.put("status", 200);
+		hmRet.put("rows", xmDetail);
+		String json = JSONObject.fromObject(hmRet).toString();
+		response.getOutputStream().write(json.getBytes("UTF-8"));
+	}
 
 	private void checkUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		HashMap hmRet = new HashMap();

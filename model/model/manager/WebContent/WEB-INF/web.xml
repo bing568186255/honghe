@@ -24,14 +24,6 @@
 	<servlet-name>AjaxPage</servlet-name>
 	<servlet-class>DragonNet.Page.AjaxPage</servlet-class>
   </servlet>
-   <servlet>
-	<servlet-name>AjaxWb</servlet-name>
-	<servlet-class>DragonNet.Page.AJAXwbPage</servlet-class>
-  </servlet>
-  <servlet>
-	<servlet-name>AjaxZww</servlet-name>
-	<servlet-class>DragonNet.Page.AJAXzwwPage</servlet-class>
-  </servlet>
   <servlet>
 	<servlet-name>ActionPage</servlet-name>
 	<servlet-class>DragonNet.Page.PageSettle</servlet-class>
