@@ -47,7 +47,7 @@ public class DBOperate {
 		return hmList;
 	}
 
-	// 读取旅游项目列表
+/*	// 读取旅游项目列表
 	public static List<HashMap> getLYXM(HashMap hm) {
 		List<HashMap> hmList = null;
 		try {
@@ -56,7 +56,7 @@ public class DBOperate {
 			e.printStackTrace();
 		}
 		return hmList;
-	}
+	}*/
 
 	// 根据条件查询旅游项目概览
 	public static List<HashMap> getLYXMGL(HashMap hm) {

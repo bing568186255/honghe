@@ -75,7 +75,7 @@ public class AjaxPage extends HttpServlet {
 	}
 
 	// ajaxTest
-	public void test(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+/*	public void test(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HashMap hmRet = new HashMap();
 		checkUser(request, response);
 		String type = (String) request.getParameter("type");
@@ -97,7 +97,7 @@ public class AjaxPage extends HttpServlet {
 		hmRet.put("rows", listLYXM);
 		String json = JSONObject.fromObject(hmRet).toString();
 		response.getOutputStream().write(json.getBytes("UTF-8"));
-	}
+	}*/
 
 	public void lvxmEchart(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -227,26 +227,26 @@ public class AjaxPage extends HttpServlet {
 		if (StringUtils.isNotBlank(xmxz))
 			hm.put("xmxz", buildQueryList(URLDecoder.decode(xmxz)));
 		List<HashMap> qxList = DBOperate.getQXinfo(hm);
+		List<HashMap<String, Object>> positionReturn = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(qxList)) {
-			List<HashMap<String, Object>> positionReturn = new ArrayList<>();
 			for (HashMap qxmap : qxList) {
-				hm.put("qxbm", qxmap.get("bm"));
+				hm.put("qxbm", qxmap.get("BM"));
 				List<HashMap> listLYXMTotal = DBOperate.getLYXMTotal(hm);
 				HashMap map = new HashMap<>();
-				map.put("qxmc", qxmap.get("mc"));
+				map.put("qxmc", qxmap.get("MC"));
 				HashMap item = new HashMap();
 				HashMap position = new HashMap();
 				try {
-					String[] s = getCoordinate(qxmap.get("mc").toString());
+					String[] s = getCoordinate(qxmap.get("MC").toString());
 					position.put("longitude", s[0]);
 					position.put("latitude", s[1]);
 					item.put("position", position);
 				} catch (Exception e) {
 					
 				}
-				item.put("title", qxmap.get("mc"));
+				item.put("title", qxmap.get("MC"));
 				item.put("xmsl", 0);
-				item.put("qxbm", qxmap.get("bm"));
+				item.put("qxbm", qxmap.get("BM"));
 				// 返回的区县数据
 				if (!CollectionUtils.isEmpty(listLYXMTotal)) {
 					int index = 1;
@@ -341,24 +341,24 @@ public class AjaxPage extends HttpServlet {
 						for (HashMap hMap : listLYXM) {
 							if (hMap != null) {
 								HashMap subItem = new HashMap();
-								String[] positionArray = hMap.get("xmzb").toString().split(",");
+								String[] positionArray = hMap.get("XMZB").toString().split(",");
 								HashMap subPosition = new HashMap();
 								subPosition.put("longitude", positionArray[0]);
 								subPosition.put("latitude", positionArray[1]);
 								subItem.put("position", subPosition);
-								subItem.put("title", hMap.get("xmm"));
-								subItem.put("jszt", hMap.get("jszt"));
-								subItem.put("ztz", hMap.get("ztz"));
+								subItem.put("title", hMap.get("XMM"));
+								subItem.put("jszt", hMap.get("JSZT"));
+								subItem.put("ztz", hMap.get("ZTZ"));
 								List<HashMap<String, Object>> subTKList = new ArrayList<>();
 								HashMap<String, Object> subFirstLi = new HashMap<>();
 								subFirstLi.put("id", ii);
-								subFirstLi.put("itemnature", hMap.get("xmgk"));
-								subFirstLi.put("itemtype", hMap.get("xmlx"));
-								subFirstLi.put("itmeproperty", hMap.get("xmsx"));
-								subFirstLi.put("itemformat", hMap.get("xmyt"));
-								subFirstLi.put("planningland", hMap.get("ghyd"));
-								subFirstLi.put("importantitem", hMap.get("xmxz"));
-								subFirstLi.put("itemstate", hMap.get("jszt"));
+								subFirstLi.put("itemnature", hMap.get("XMGK"));
+								subFirstLi.put("itemtype", hMap.get("XMLX"));
+								subFirstLi.put("itmeproperty", hMap.get("XMSX"));
+								subFirstLi.put("itemformat", hMap.get("XMYT"));
+								subFirstLi.put("planningland", hMap.get("GHYD"));
+								subFirstLi.put("importantitem", hMap.get("XMXZ"));
+								subFirstLi.put("itemstate", hMap.get("JSZT"));
 								subTKList.add(subFirstLi);
 								HashMap<String, Object> subSecondeLi = new HashMap<>();
 								subSecondeLi.put("completename", "项目类型");
@@ -392,12 +392,11 @@ public class AjaxPage extends HttpServlet {
 			// List<HashMap> listLYXM = DBOperate.getLYXMGL(hm);
 			hmRet.remove("jszt");
 			hmRet.remove("qxbm");
-			hmRet.put("status", 200);
-			hmRet.put("rows", positionReturn);
-			String json = JSONObject.fromObject(hmRet).toString();
-			response.getOutputStream().write(json.getBytes("UTF-8"));
-
 		}
+		hmRet.put("status", 200);
+		hmRet.put("rows", positionReturn);
+		String json = JSONObject.fromObject(hmRet).toString();
+		response.getOutputStream().write(json.getBytes("UTF-8"));
 	}
 
 	private int formatNum(Object obj) {
