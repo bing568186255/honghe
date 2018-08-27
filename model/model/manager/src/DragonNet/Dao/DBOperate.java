@@ -104,6 +104,21 @@ public class DBOperate {
 		return hmList;
 	}
 	
+	/**
+	 * 查询项目详情
+	 * @param hm
+	 * @return
+	 */
+	public static HashMap xmDetail(HashMap hm) {
+		List<HashMap> hmList = null;
+		try {
+			hmList = sqlMapClient.queryForList("xmDetail", hm);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return hmList.get(0);
+	}
+	
 	public static List<HashMap> getXMKFQK(HashMap hm){
 		List<HashMap> hmList = null;
 		try {

@@ -186,4 +186,37 @@
 		"ID"=#id#
 		</isPropertyAvailable>
 	</select>
+	
+	<select id="xmDetail" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		select
+		a."XMM"  as "xmm",
+		a."XMDZ" as "xmdz",
+		a."XMGK" as "xmgk",
+		a."SZFW" as "szfw",
+		a."XMSX" as "xmsx",
+		a."XMLX" as "xmlx",
+		a."XMXZ" as "xmxz",
+		a."ZTZ" as "ztz",
+		a."XMYT" as "xmyt",
+		a."GHYD" as "ghyd",
+		a."ZDXMXZJWH" as "zdxmxzjwh",
+		to_char(a."KGSJ",'YYYY-MM-DD') as "kgsj",
+		to_char(a."JSZQ",'YYYY-MM-DD') as "jszq",
+		a."SJLJTZ" as "sjljtz",
+		a."XMZGDW" as "xmzgdw",
+		a."XMFZRDH" as "xmfzrdh",
+		a."XMFZR" as "xmfzr",
+		b."TZDWMC" as "tzdwmc",
+		b."TZXZ" as "tzxz",
+		b."TZBL" as "tzbl",
+		b."BZ" as "bz",
+		b."TZDWQK" as "tzdwqk"
+		from 
+		"HHLY_LYXM" a 
+		left join
+		"HHLY_XMTZQKTB" b on a."XMM" = b."XMMC"
+		<isPropertyAvailable prepend="and" property="xmmc">
+		a."XMM"=#xmmc#
+		</isPropertyAvailable>
+	</select>
 </sqlMap>  
