@@ -68,7 +68,7 @@
 			FROM
 				(
 					SELECT
-						b.*, RANK () OVER (
+						b.*, ROW_NUMBER () OVER (
 							PARTITION BY b."XMMC"
 							ORDER BY
 								b."RQ" DESC
