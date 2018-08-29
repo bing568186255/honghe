@@ -56,11 +56,36 @@
 			</isPropertyAvailable>
 		</dynamic>
 	</select> -->
+	
+	<sql id="lyxm">
+		(SELECT
+			A .*, D ."JSJD" AS "JSZT"
+		FROM
+			"HHLY_LYXM" A
+		LEFT JOIN (
+			SELECT
+				*
+			FROM
+				(
+					SELECT
+						b.*, RANK () OVER (
+							PARTITION BY b."XMMC"
+							ORDER BY
+								b."RQ" DESC
+						) AS rk
+					FROM
+						HHLY_XMKFQKTB b
+				) c
+			WHERE
+				c.rk = 1
+		) D ON A ."XMM" = D ."XMMC")
+	</sql>
 
 	<select id="getLYXMGL" parameterClass="java.util.HashMap"
 		resultClass="java.util.HashMap">
 		select *
-		FROM "HHLY_LYXM"
+		FROM 
+		<include refid="lyxm"/>
 		<dynamic prepend="where">
 			<isPropertyAvailable prepend="and" property="qxbm">
 				"QXBM"=#qxbm#
@@ -108,7 +133,7 @@
 		SUM ("JSYD") AS "jssl",
 		SUM ("GHYD") AS "ghsl"
 		FROM
-		"HHLY_LYXM"
+		<include refid="lyxm"/>
 		<dynamic prepend="where">
 			<isPropertyAvailable prepend="and" property="qxbm">
 				"QXBM" = #qxbm#
@@ -152,7 +177,7 @@
 		SUM ("ZTZ") AS "xmztz",
 		SUM ("SJLJTZ") AS "sjljtz"
 		FROM
-		"HHLY_LYXM"
+		<include refid="lyxm"/>
 		<dynamic prepend="where">
 			<isPropertyAvailable prepend="and" property="qxbm">
 				"QXBM"=#qxbm#
@@ -212,7 +237,7 @@
 		b."BZ" as "bz",
 		b."TZDWQK" as "tzdwqk"
 		from 
-		"HHLY_LYXM" a 
+		<include refid="lyxm"/> a 
 		left join
 		"HHLY_XMTZQKTB" b on a."XMM" = b."XMMC"
 		<isPropertyAvailable prepend="and" property="xmmc">
