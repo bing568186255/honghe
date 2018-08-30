@@ -69,7 +69,7 @@
 				(
 					SELECT
 						b.*, ROW_NUMBER () OVER (
-							PARTITION BY b."XMMC"
+							PARTITION BY b."XMID"
 							ORDER BY
 								b."RQ" DESC
 						) AS rk
@@ -78,7 +78,7 @@
 				) c
 			WHERE
 				c.rk = 1
-		) D ON A ."XMM" = D ."XMMC")
+		) D ON A ."ID" = D ."XMID")
 	</sql>
 
 	<select id="getLYXMGL" parameterClass="java.util.HashMap"
