@@ -204,13 +204,58 @@
 	
 	<select id="getXMKFQK" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
 		select
-		*
+		 a."ID" 
+		 ,a."XMID"
+		 ,to_char(a."RQ",'yyyy-MM-dd') RQ
+		 ,a."XMMC"
+		 ,a."JSJD" 
+		 , a."SM" 
+		 ,'test' as sjtby 
+		 ,b."url" 
+		 ,1 as tpsl 
+		 ,c."dw"
 		from 
-		"HHLY_XMKFQKTB"
-		<isPropertyAvailable prepend="and" property="id">
-		"ID"=#id#
-		</isPropertyAvailable>
+		"HHLY_XMKFQKTB"  a
+		
+		LEFT JOIN "HHLY_XCT"  b 
+		
+		on a."XMID" = b."xmid"
+		
+		LEFT JOIN "HHLY_DW"  c 
+		
+		ON b."dwid" = c."id"
+		<dynamic prepend="where">
+			<isPropertyAvailable prepend="and" property="id">
+			a."XMID"=#id#
+			</isPropertyAvailable>
+			<isPropertyAvailable prepend="and" property="xmrq">
+			to_char(a."RQ",'yyyy-MM-dd')=#xmrq#
+			</isPropertyAvailable>
+		</dynamic>
+		order  by rq desc
+		
 	</select>
+	<select id="getXCTBYDW" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT  a."dw" 
+		,b."url" ,b."xmid" 
+		
+		from 
+		
+		HHLY_DW a  
+		
+		LEFT JOIN HHLY_XCT b
+		
+		ON a."id" = b."dwid"
+		where 
+		b."xmid"=#xmid#
+		and a."id"=#dw#
+		
+	
+	
+	</select>
+	
+	
+	
 	
 	<select id="xmDetail" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
 		select

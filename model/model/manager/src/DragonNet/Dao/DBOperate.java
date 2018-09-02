@@ -129,4 +129,14 @@ public class DBOperate {
 		return hmList;
 		
 	}
+
+	public static List<HashMap> getXCTBYDW(HashMap hm) {
+		List<HashMap> hmList = null;
+		try {
+			hmList = sqlMapClient.queryForList("getXCTBYDW", hm);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return hmList;
+	}
 }

@@ -125,20 +125,40 @@ public class AjaxPage extends HttpServlet {
 		HashMap hmRet = new HashMap();
 		checkUser(request, response);
 		String id = (String) request.getParameter("xmid");
+		String xmrq = (String) request.getParameter("xmrq");
 		HashMap hm = new HashMap();
 		if(id!=null) {
 			hm.put("id", id);
-			List<HashMap> listLYXM = DBOperate.getXMKFQK(hm);
-			hmRet.put("status", 200);
-			hmRet.put("rows", listLYXM);
-			String json = JSONObject.fromObject(hmRet).toString();
-			response.getOutputStream().write(json.getBytes("UTF-8"));
-		}else {
-			hmRet.put("status", 400);
-			hmRet.put("rows", null);
-			String json = JSONObject.fromObject(hmRet).toString();
-			response.getOutputStream().write(json.getBytes("UTF-8"));
 		}
+		if(xmrq!=null) {
+			hm.put("xmrq", xmrq);
+		}
+		System.out.println(id);
+		List<HashMap> listXMKFQK= DBOperate.getXMKFQK(hm);
+		hmRet.put("status", 200);
+		hmRet.put("rows", listXMKFQK);
+		String json = JSONObject.fromObject(hmRet).toString();
+		response.getOutputStream().write(json.getBytes("UTF-8"));
+	}
+	
+	public void lvxmXCTBYDW(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		HashMap hmRet = new HashMap();
+		checkUser(request, response);
+		String xmid = (String) request.getParameter("xmid");
+		String dw = (String) request.getParameter("dw");
+		HashMap hm = new HashMap();
+		if(xmid!=null) {
+			hm.put("xmid", xmid);
+		}
+		if(dw!=null) {
+			hm.put("dw", dw);
+		}
+		List<HashMap> listXCTBYDW = DBOperate.getXCTBYDW(hm);
+		hmRet.put("status", 200);
+		hmRet.put("rows", listXCTBYDW);
+		String json = JSONObject.fromObject(hmRet).toString();
+		response.getOutputStream().write(json.getBytes("UTF-8"));
+		
 	}
 	
 
