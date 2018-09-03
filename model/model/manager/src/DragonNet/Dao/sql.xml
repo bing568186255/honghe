@@ -3,6 +3,30 @@
     PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"        
     "http://ibatis.apache.org/dtd/sql-map-2.dtd">
 <sqlMap>
+	<sql id="lyxm">
+		(SELECT
+			A .*, D ."JSJD" AS "JSZT"
+		FROM
+			"HHLY_LYXM" A
+		LEFT JOIN (
+			SELECT
+				*
+			FROM
+				(
+					SELECT
+						b.*, ROW_NUMBER () OVER (
+							PARTITION BY b."XMID"
+							ORDER BY
+								b."RQ" DESC
+						) AS rk
+					FROM
+						HHLY_XMKFQKTB b
+				) c
+			WHERE
+				c.rk = 1
+		) D ON A ."ID" = D ."XMID")
+	</sql>
+
 	<select id="getXMSTJ" parameterClass="java.util.HashMap"
 		resultClass="java.util.HashMap">
 		select b."BM" as "bm" ,b."MC" as "qxmc" ,nvl(a."xms",0) as "xms"
@@ -58,29 +82,7 @@
 		</dynamic>
 	</select> -->
 	
-	<sql id="lyxm">
-		(SELECT
-			A .*, D ."JSJD" AS "JSZT"
-		FROM
-			"HHLY_LYXM" A
-		LEFT JOIN (
-			SELECT
-				*
-			FROM
-				(
-					SELECT
-						b.*, ROW_NUMBER () OVER (
-							PARTITION BY b."XMID"
-							ORDER BY
-								b."RQ" DESC
-						) AS rk
-					FROM
-						HHLY_XMKFQKTB b
-				) c
-			WHERE
-				c.rk = 1
-		) D ON A ."ID" = D ."XMID")
-	</sql>
+	
 
 	<select id="getLYXMGL" parameterClass="java.util.HashMap"
 		resultClass="java.util.HashMap">
