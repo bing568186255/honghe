@@ -21,7 +21,7 @@
 		left join
 		(select "QXBM" AS "qxbm" , sum("GHYD")as "xmmj" FROM "HHLY_LYXM" group by "QXBM")
 		a
-		on a."QXBM" = b."BM"
+		on a."qxbm" = b."BM"
 	</select>
 
 	<select id="getJSZTTJ" parameterClass="java.util.HashMap"
@@ -29,7 +29,8 @@
 		select
 		"JSZT" AS "jszt"
 		, count("ID")as "xms"
-		FROM "HHLY_LYXM"
+		FROM
+       <include refid="lyxm"/>
 		group by "JSZT"
 	</select>
 
