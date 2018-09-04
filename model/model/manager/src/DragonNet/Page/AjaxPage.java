@@ -222,20 +222,23 @@ public class AjaxPage extends HttpServlet {
 		response.getOutputStream().write(json.getBytes("UTF-8"));
 	}
 
+	/**
+	 * 市县旅游项目地图显示接口
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes", "deprecation" })
 	public void lvxmXR(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HashMap hmRet = new HashMap();
 		checkUser(request, response);
-		// String qxbm = (String) request.getParameter("qxbm");
 		String jszt = (String) request.getParameter("jszt");
 		String xmsx = (String) request.getParameter("xmsx");
 		String xmyt = (String) request.getParameter("xmyt");
 		String xmxz = (String) request.getParameter("xmxz");
 		HashMap hm = new HashMap();
 		List<String> jsztList = new ArrayList<>();
-		/*
-		 * if (StringUtils.isNotBlank(qxbm)) hm.put("qxbm",
-		 * buildQueryList(qxbm));
-		 */
 		if (StringUtils.isNotBlank(jszt)) {
 			jsztList = buildQueryList(URLDecoder.decode(jszt));
 			hm.put("jszt", jsztList);
@@ -262,7 +265,7 @@ public class AjaxPage extends HttpServlet {
 					position.put("latitude", s[1]);
 					item.put("position", position);
 				} catch (Exception e) {
-					
+					e.printStackTrace();
 				}
 				item.put("title", qxmap.get("MC"));
 				item.put("xmsl", 0);
@@ -270,146 +273,67 @@ public class AjaxPage extends HttpServlet {
 				// 返回的区县数据
 				if (!CollectionUtils.isEmpty(listLYXMTotal)) {
 					int index = 1;
-					// for (HashMap map : listLYXMTotal) {
-					// 查询区县名称；
-					/*
-					 * hm.put("qxbm", map.get("qxbm")); List<HashMap> qxList =
-					 * DBOperate.getQXinfo(hm);
-					 */
-					/*
-					 * if (!CollectionUtils.isEmpty(qxList)) { }
-					 */
 					HashMap totalMap = listLYXMTotal.get(0);
 					map.putAll(totalMap);
 					item.put("xmsl", formatNum(map.get("xmzs")));
 					List<HashMap<String, Object>> parentList = new ArrayList<>();
 					// 项目总数
-					HashMap<String, Object> firstLi = new HashMap<>();
-					firstLi.put("id", index);
-					firstLi.put("itemname", "项目数量");
-					firstLi.put("itemcount", formatNum(map.get("xmzs")));
-					firstLi.put("itemdesign", formatNum(map.get("xmztz")));
-					firstLi.put("itemactually", formatNum(map.get("sjljtz")));
-					firstLi.put("jszt", "");
+					HashMap<String, Object> firstLi = buildMap("id,itemname,itemcount,itemdesign,itemactually",
+							index+","+"项目数量"+","+formatNum(map.get("xmzs"))+","+formatNum(map.get("xmztz"))+","+formatNum(map.get("sjljtz")));
 					parentList.add(firstLi);
 					HashMap<String, Object> secondeLi = new HashMap<>();
 					if (!CollectionUtils.isEmpty(jsztList) && !jsztList.contains("已完成")) {
-						secondeLi.put("completename", "完工数");
-						secondeLi.put("completeNum", 0);
-						secondeLi.put("completedesign", 0);
-						secondeLi.put("completeactually", 0);
-						secondeLi.put("jszt", "已完成");
+						secondeLi = buildMap("completename,completeNum,completedesign,completeactually,jszt",
+								"完工数"+","+0+","+0+","+0+","+ "已完成");
 					} else {
 						hm.put("jszt", "已完成");
 						HashMap wgs = DBOperate.getLYXMWGS(hm);
-						secondeLi.put("completename", "完工数");
-						secondeLi.put("completeNum", wgs == null ? 0 : formatNum(wgs.get("xmzs")));
-						secondeLi.put("completedesign", wgs == null ? 0 : formatNum(wgs.get("xmztz")));
-						secondeLi.put("completeactually", wgs == null ? 0 : formatNum(wgs.get("sjljtz")));
-						secondeLi.put("jszt", "已完成");
+						secondeLi = buildMap("completename,completeNum,completedesign,completeactually,jszt",
+								"完工数"+","+(wgs == null ? 0 : formatNum(wgs.get("xmzs")))+","
+						+(wgs == null ? 0 : formatNum(wgs.get("xmztz")))+","+(wgs == null ? 0 : formatNum(wgs.get("sjljtz")))+","+ "已完成");
 					}
 					parentList.add(secondeLi);
 					HashMap<String, Object> thirdLi = new HashMap<>();
 					if (!CollectionUtils.isEmpty(jsztList) && !jsztList.contains("建设中")) {
-						thirdLi.put("bulidname", "建设数量");
-						thirdLi.put("bulidNum", 0);
-						thirdLi.put("buliddesign", 0);
-						thirdLi.put("bulidactually", 0);
-						thirdLi.put("jszt", "建设中");
+						thirdLi = buildMap("bulidname,bulidNum,buliddesign,bulidactually,jszt",
+								"建设数量"+","+0+","+0+","+0+","+ "建设中");
 					} else {
 						hm.put("jszt", "建设中");
 						HashMap wwc = DBOperate.getLYXMWGS(hm);
-						thirdLi.put("bulidname", "建设数量");
-						thirdLi.put("bulidNum", wwc == null ? 0 : formatNum(wwc.get("xmzs")));
-						thirdLi.put("buliddesign", wwc == null ? 0 : formatNum(wwc.get("xmztz")));
-						thirdLi.put("bulidactually", wwc == null ? 0 : formatNum(wwc.get("sjljtz")));
-						thirdLi.put("jszt", "建设中");
+						thirdLi = buildMap("bulidname,bulidNum,buliddesign,bulidactually,jszt",
+								"建设数量"+","+(wwc == null ? 0 : formatNum(wwc.get("xmzs")))+","
+						+(wwc == null ? 0 : formatNum(wwc.get("xmztz")))+","+(wwc == null ? 0 : formatNum(wwc.get("sjljtz")))+","+ "建设中");
 					}
 					parentList.add(thirdLi);
 					HashMap<String, Object> fourLi = new HashMap<>();
 					if (!CollectionUtils.isEmpty(jsztList) && !jsztList.contains("计划中")) {
-						fourLi.put("planningname", "计划数量");
-						fourLi.put("planningNum", 0);
-						fourLi.put("buliddesign", 0);
-						fourLi.put("bulidactually", 0);
-						fourLi.put("jszt", "计划中");
+						fourLi = buildMap("planningname,planningNum,buliddesign,bulidactually,jszt",
+								"计划数量"+","+0+","+0+","+0+","+ "计划中");
 					} else {
 						hm.put("jszt", "计划中");
 						HashMap jhz = DBOperate.getLYXMWGS(hm);
-						fourLi.put("planningname", "计划数量");
-						fourLi.put("planningNum", jhz == null ? 0 : formatNum(jhz.get("xmzs")));
-						fourLi.put("buliddesign", jhz == null ? 0 : formatNum(jhz.get("xmztz")));
-						fourLi.put("bulidactually", jhz == null ? 0 : formatNum(jhz.get("sjljtz")));
-						fourLi.put("jszt", "计划中");
+						fourLi = buildMap("planningname,planningNum,buliddesign,bulidactually,jszt",
+								"计划数量"+","+(jhz == null ? 0 : formatNum(jhz.get("xmzs")))
+								+","+(jhz == null ? 0 : formatNum(jhz.get("xmztz")))
+								+","+(jhz == null ? 0 : formatNum(jhz.get("sjljtz")))+","+ "计划中");
 					}
 					parentList.add(fourLi);
 					item.put("list", parentList);
 					index++;
 					// 县下面旅游项目集合构建
 					hm.remove("jszt");
-					/*
-					 * if (StringUtils.isNotBlank(jszt)) hm.put("jszt", jszt);
-					 */
 					if (StringUtils.isNotBlank(jszt)) {
 						jsztList = buildQueryList(URLDecoder.decode(jszt));
 						hm.put("jszt", jsztList);
 					}
 					List<HashMap> listLYXM = DBOperate.getLYXMGL(hm);
 					if (!CollectionUtils.isEmpty(listLYXM)) {
-						List<HashMap<String, Object>> subList = new ArrayList<>();
-						int ii = 1;
-						for (HashMap hMap : listLYXM) {
-							if (hMap != null) {
-								HashMap subItem = new HashMap();
-								String[] positionArray = hMap.get("XMZB").toString().split(",");
-								HashMap subPosition = new HashMap();
-								subPosition.put("longitude", positionArray[0]);
-								subPosition.put("latitude", positionArray[1]);
-								subItem.put("position", subPosition);
-								subItem.put("title", hMap.get("XMM"));
-								subItem.put("jszt", hMap.get("JSZT"));
-								subItem.put("ztz", hMap.get("ZTZ"));
-								List<HashMap<String, Object>> subTKList = new ArrayList<>();
-								HashMap<String, Object> subFirstLi = new HashMap<>();
-								subFirstLi.put("id", ii);
-								subFirstLi.put("itemnature", hMap.get("XMGK"));
-								subFirstLi.put("itemtype", hMap.get("XMLX"));
-								subFirstLi.put("itmeproperty", hMap.get("XMSX"));
-								subFirstLi.put("itemformat", hMap.get("XMYT"));
-								subFirstLi.put("planningland", hMap.get("GHYD"));
-								subFirstLi.put("importantitem", hMap.get("XMXZ"));
-								subFirstLi.put("itemstate", hMap.get("JSZT"));
-								subTKList.add(subFirstLi);
-								HashMap<String, Object> subSecondeLi = new HashMap<>();
-								subSecondeLi.put("completename", "项目类型");
-								subSecondeLi.put("completeNum", "");
-								subSecondeLi.put("completedesign", "");
-								subSecondeLi.put("completeactually", "");
-								subTKList.add(subSecondeLi);
-								HashMap<String, Object> subThirdLi = new HashMap<>();
-								subThirdLi.put("bulidname", "项目业态");
-								subThirdLi.put("bulidNum", "");
-								subThirdLi.put("buliddesign", "");
-								subThirdLi.put("bulidactually", "");
-								subTKList.add(subThirdLi);
-								HashMap<String, Object> subFourLi = new HashMap<>();
-								subFourLi.put("planningname", "项目建设状态");
-								subFourLi.put("planningNum", "");
-								subFourLi.put("buliddesign", "");
-								subFourLi.put("bulidactually", "");
-								subTKList.add(subFourLi);
-								subItem.put("list", subTKList);
-								subList.add(subItem);
-								ii++;
-							}
-						}
-						item.put("subList", subList);
+						item.put("subList", buildSubList(listLYXM));
 					}
 					//}
 				}
 				positionReturn.add(item);
 			}
-			// List<HashMap> listLYXM = DBOperate.getLYXMGL(hm);
 			hmRet.remove("jszt");
 			hmRet.remove("qxbm");
 		}
@@ -417,6 +341,63 @@ public class AjaxPage extends HttpServlet {
 		hmRet.put("rows", positionReturn);
 		String json = JSONObject.fromObject(hmRet).toString();
 		response.getOutputStream().write(json.getBytes("UTF-8"));
+	}
+	
+	/**
+	 * 构建具体某个县项目
+	 * @param listLYXM
+	 * @return
+	 */
+	@SuppressWarnings({ "unused", "rawtypes", "unchecked" })
+	private List<HashMap<String, Object>> buildSubList (List<HashMap> listLYXM){
+		List<HashMap<String, Object>> subList = new ArrayList<>();
+		int ii = 1;
+		for (HashMap hMap : listLYXM) {
+			if (hMap != null) {
+				HashMap subItem = new HashMap();
+				String[] positionArray = hMap.get("XMZB").toString().split(",");
+				HashMap subPosition = new HashMap();
+				subPosition.put("longitude", positionArray[0]);
+				subPosition.put("latitude", positionArray[1]);
+				subItem.put("position", subPosition);
+				subItem.put("title", hMap.get("XMM"));
+				subItem.put("jszt", hMap.get("JSZT"));
+				subItem.put("ztz", hMap.get("ZTZ"));
+				List<HashMap<String, Object>> subTKList = new ArrayList<>();
+				HashMap<String, Object> subFirstLi =buildMap("id,itemnature,itemtype,itmeproperty,itemformat,planningland,importantitem,itemstate",
+						ii+","+ hMap.get("XMGK")+","+hMap.get("XMLX")+","+hMap.get("XMSX")+","+ hMap.get("XMYT")+","+hMap.get("GHYD")
+						+","+hMap.get("XMXZ")+","+hMap.get("JSZT"));
+				subTKList.add(subFirstLi);
+				subItem.put("list", subTKList);
+				subList.add(subItem);
+				ii++;
+			}
+		}
+		return subList;
+	}
+	
+	
+	/**
+	 * 封装map
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private HashMap buildMap(String key,String value){
+		if(StringUtils.isEmpty(key) || StringUtils.isEmpty(value)) {
+			return null;
+		}
+		String [] keyArr = key.split(",");
+		String [] valueArr = value.split(",");
+		if(keyArr.length != valueArr.length){
+			return null;
+		}
+		HashMap map = new HashMap();
+		for(int i = 0 ;i<keyArr.length; i++){
+			map.put(keyArr[i], valueArr[i]);
+		}
+		return map;
 	}
 
 	private int formatNum(Object obj) {
@@ -426,6 +407,7 @@ public class AjaxPage extends HttpServlet {
 		return Integer.parseInt(obj.toString());
 	}
 
+	@SuppressWarnings("unused")
 	private int jisuanNum(Object obj1, Object obj2, Object obj3) {
 		return Integer.parseInt(obj1.toString()) - Integer.parseInt(obj2.toString())
 				- Integer.parseInt(obj3.toString());

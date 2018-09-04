@@ -28,6 +28,10 @@
 	<servlet-name>ActionPage</servlet-name>
 	<servlet-class>DragonNet.Page.PageSettle</servlet-class>
   </servlet>
+    <servlet>
+	<servlet-name>HotelPage</servlet-name>
+	<servlet-class>DragonNet.Page.HotelPage</servlet-class>
+  </servlet>
   
   <servlet-mapping>
 	<servlet-name>AjaxPage</servlet-name>
@@ -36,6 +40,10 @@
   <servlet-mapping>
 	<servlet-name>ActionPage</servlet-name>
 	<url-pattern>/action.html</url-pattern>
+  </servlet-mapping>
+   <servlet-mapping>
+	<servlet-name>HotelPage</servlet-name>
+	<url-pattern>/hotel.html</url-pattern>
   </servlet-mapping>
 
 	<session-config>

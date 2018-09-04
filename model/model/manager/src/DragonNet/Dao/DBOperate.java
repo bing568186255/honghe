@@ -15,7 +15,7 @@ import com.ibatis.sqlmap.client.SqlMapClient;
 import com.ibatis.sqlmap.client.SqlMapClientBuilder;
 
 public class DBOperate {
-	private static SqlMapClient sqlMapClient = null;
+	private static SqlMapClient sqlMapClient = SqlMapClientUtil.getSqlMapClient();
 
 	// 读取配置文件
 	static {

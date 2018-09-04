@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap        
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"        
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap>
+		<!-- <select id="getXMSTJ" parameterClass="java.util.HashMap"
+		resultClass="java.util.HashMap">
+		select b."BM" as "bm" ,b."MC" as "qxmc" ,nvl(a."xms",0) as "xms"
+		from
+		"HHLY_QXDY" b
+		left join
+		(select "QXBM" , count("ID") as "xms" FROM "HHLY_LYXM" GROUP BY "QXBM") a
+		on a."QXBM" = b."BM"
+	</select> -->
+</sqlMap>  

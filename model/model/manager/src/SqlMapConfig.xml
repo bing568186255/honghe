@@ -19,4 +19,5 @@
         </dataSource>
 	</transactionManager>
 	<sqlMap resource="DragonNet/Dao/sql.xml" />
+	<sqlMap resource="DragonNet/Dao/hotelsql.xml" />
 </sqlMapConfig>
