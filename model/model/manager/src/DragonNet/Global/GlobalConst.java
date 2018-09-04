@@ -14,6 +14,8 @@ public final class GlobalConst {
 	public static final String RESP_CHAR_ENCODING = "utf-8";
 	public static final long SYS_TRIAL_DAYS	= 90;	//试用天数
 	
+	public static final String HOTEL_PARAM_NAME = "hotel";
+	
 	private static boolean initialized = false;
 	private static String imagePath = "";
 	private static String tempPath = "";
