@@ -16,6 +16,8 @@ public final class GlobalConst {
 	
 	public static final String HOTEL_PARAM_NAME = "hotel";
 	
+	public static final String JINGDIAN_PARAM_NAME="jingdian";
+	
 	private static boolean initialized = false;
 	private static String imagePath = "";
 	private static String tempPath = "";
