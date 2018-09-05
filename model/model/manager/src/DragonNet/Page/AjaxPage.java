@@ -362,10 +362,10 @@ public class AjaxPage extends HttpServlet {
 				subItem.put("position", subPosition);
 				subItem.put("title", hMap.get("XMM"));
 				subItem.put("jszt", hMap.get("JSZT"));
-				subItem.put("ztz", hMap.get("ZTZ"));
+				subItem.put("ztz", hMap.get("ZTZ"));	
 				List<HashMap<String, Object>> subTKList = new ArrayList<>();
 				HashMap<String, Object> subFirstLi =buildMap("id,itemnature,itemtype,itmeproperty,itemformat,planningland,importantitem,itemstate",
-						ii+","+ hMap.get("XMGK")+","+hMap.get("XMLX")+","+hMap.get("XMSX")+","+ hMap.get("XMYT")+","+hMap.get("GHYD")
+						ii+","+ hMap.get("ZDXMXZJWH")+","+hMap.get("XMLX")+","+hMap.get("XMSX")+","+ hMap.get("XMYT")+","+hMap.get("GHYD")
 						+","+hMap.get("XMXZ")+","+hMap.get("JSZT"));
 				subTKList.add(subFirstLi);
 				subItem.put("list", subTKList);
