@@ -1,6 +1,9 @@
 package DragonNet.Global;
 
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.text.ParseException;
@@ -13,6 +16,8 @@ import java.util.zip.ZipOutputStream;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import net.sf.json.JSONObject;
 
 public final class GlobalFun {
 	public static boolean mbIsWindows = false;
@@ -501,4 +506,62 @@ public final class GlobalFun {
 	    }
 	    GlobalFun.DebugOut("runbat done");
 	}	
+	
+
+	/**
+	 * @param addr
+	 *            查询的地址
+	 * @return
+	 * @throws IOException
+	 */
+	public static String[] getCoordinate(String addr) throws IOException {
+		if("泸西县".equals(addr)){
+			return new String[] { "103.766196", "24.532025" };
+		}
+		String lng = null;// 经度
+		String lat = null;// 纬度
+		String address = null;
+		try {
+			address = java.net.URLEncoder.encode(addr, "UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
+		}
+		// System.out.println(address);
+		String url = "http://api.map.baidu.com/geocoder/v2/?output=json&ak=iV88vKWCxcFd0XkPBT6G0xBG8Fa1Geim&address="
+				+ address;
+		URL myURL = null;
+
+		URLConnection httpsConn = null;
+		try {
+			myURL = new URL(url);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		InputStreamReader insr = null;
+		BufferedReader br = null;
+		try {
+			httpsConn = (URLConnection) myURL.openConnection();
+			if (httpsConn != null) {
+				insr = new InputStreamReader(httpsConn.getInputStream(), "UTF-8");
+				br = new BufferedReader(insr);
+				String data = null;
+				while ((data = br.readLine()) != null) {
+					JSONObject json = JSONObject.fromObject(data);
+					lng = json.getJSONObject("result").getJSONObject("location").getString("lng");
+					lat = json.getJSONObject("result").getJSONObject("location").getString("lat");
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (insr != null) {
+				insr.close();
+			}
+			if (br != null) {
+				br.close();
+			}
+		}
+		return new String[] { lng, lat };
+	}
+
 }

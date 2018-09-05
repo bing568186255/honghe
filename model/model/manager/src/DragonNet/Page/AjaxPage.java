@@ -260,7 +260,7 @@ public class AjaxPage extends HttpServlet {
 				HashMap item = new HashMap();
 				HashMap position = new HashMap();
 				try {
-					String[] s = getCoordinate(qxmap.get("MC").toString());
+					String[] s = GlobalFun.getCoordinate(qxmap.get("MC").toString());
 					position.put("longitude", s[0]);
 					position.put("latitude", s[1]);
 					item.put("position", position);
@@ -413,64 +413,8 @@ public class AjaxPage extends HttpServlet {
 				- Integer.parseInt(obj3.toString());
 	}
 
-	/**
-	 * @param addr
-	 *            查询的地址
-	 * @return
-	 * @throws IOException
-	 */
-	public static String[] getCoordinate(String addr) throws IOException {
-		if("泸西县".equals(addr)){
-			return new String[] { "103.766196", "24.532025" };
-		}
-		String lng = null;// 经度
-		String lat = null;// 纬度
-		String address = null;
-		try {
-			address = java.net.URLEncoder.encode(addr, "UTF-8");
-		} catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
-		}
-		// System.out.println(address);
-		String url = "http://api.map.baidu.com/geocoder/v2/?output=json&ak=iV88vKWCxcFd0XkPBT6G0xBG8Fa1Geim&address="
-				+ address;
-		URL myURL = null;
-
-		URLConnection httpsConn = null;
-		try {
-			myURL = new URL(url);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		InputStreamReader insr = null;
-		BufferedReader br = null;
-		try {
-			httpsConn = (URLConnection) myURL.openConnection();
-			if (httpsConn != null) {
-				insr = new InputStreamReader(httpsConn.getInputStream(), "UTF-8");
-				br = new BufferedReader(insr);
-				String data = null;
-				while ((data = br.readLine()) != null) {
-					JSONObject json = JSONObject.fromObject(data);
-					lng = json.getJSONObject("result").getJSONObject("location").getString("lng");
-					lat = json.getJSONObject("result").getJSONObject("location").getString("lat");
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (insr != null) {
-				insr.close();
-			}
-			if (br != null) {
-				br.close();
-			}
-		}
-		return new String[] { lng, lat };
-	}
-
 	public static void main(String[] args) throws IOException {
-		System.out.println(getCoordinate("红河县"));
+		System.out.println(GlobalFun.getCoordinate("红河县"));
 	}
 	
 	/**
