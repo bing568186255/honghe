@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap        
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"        
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap>
+	<select id="getJQ" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		select *  from "HHLY_JQ" 
+		<dynamic prepend="where">
+			<isPropertyAvailable prepend="and" property="qxbm">
+				"SSSX"=#qxbm#
+			</isPropertyAvailable>
+		</dynamic>
+	</select>
+	
+	<select id="getJQRS" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+	   select to_char(RQ,'yyyy-mm') "SJ"  , sum(YKSLA +YKSLA+YKSLC+YKSLD+YKSLE+YKSLF+YKSL) "YKS"   
+	   from "HHLY_SJZQ" 
+	   where "JQID"=#jqid#
+       group by  to_char(RQ,'yyyy-mm')
+	   order by to_char(RQ,'yyyy-mm')
+	</select>
+	
+	<select id="getQXJQRS" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+	   select to_char(RQ,'yyyy-mm') "SJ"  , sum(YKSLA +YKSLA+YKSLC+YKSLD+YKSLE+YKSLF+YKSL) "YKS"   
+	   from "HHLY_SJZQ" 
+	   where "SXBM"=#qxbm#
+       group by  to_char(RQ,'yyyy-mm')
+	   order by to_char(RQ,'yyyy-mm')
+	</select>
+</sqlMap>  
