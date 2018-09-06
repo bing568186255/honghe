@@ -108,6 +108,12 @@ public class JQPage extends HttpServlet {
 					item.put("jqsl", QuXianJQs.size());
 					for (HashMap<String, Object> qxJq : QuXianJQs) {
 						String jqid = qxJq.get("ID").toString();
+						String jqzb = qxJq.get("JQZB").toString();
+						String [] strArr = jqzb.split(",");
+						HashMap position = new HashMap();
+						position.put("longitude", strArr[0]);
+						position.put("latitude", strArr[1]);
+						qxJq.put("JQZB", position);
 						if(StringUtils.isNotBlank(jqid)) {
 							HashMap hm2 = new HashMap();
 							hm2.put("jqid", jqid);
