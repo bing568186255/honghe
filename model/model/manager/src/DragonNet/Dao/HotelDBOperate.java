@@ -8,22 +8,25 @@ import com.ibatis.sqlmap.client.SqlMapClient;
 public class HotelDBOperate {
 	private static SqlMapClient sqlMapClient = SqlMapClientUtil.getSqlMapClient();
 	
-	// 根据类型获取各统计chart数据
-	public static List<HashMap> getChartData(HashMap hm, String type) {
+	// 根据类型获取旅行社、2酒店、3餐饮数据
+	public static List<HashMap> getHotelInfo(HashMap hm) {
 		List<HashMap> hmList = null;
 		try {
-			if (type.equals("xms")) {
-				hmList = (List<HashMap>) sqlMapClient.queryForList("getXMSTJ", hm);
-			} else if (type.equals("xmmj")) {
-				hmList = (List<HashMap>) sqlMapClient.queryForList("getXMMJTJ", hm);
-			} else if (type.equals("jszt")) {
-				hmList = (List<HashMap>) sqlMapClient.queryForList("getJSZTTJ", hm);
-			} else {
-				hmList = (List<HashMap>) sqlMapClient.queryForList("getXMSXTJ", hm);
-			}
+			hmList = (List<HashMap>) sqlMapClient.queryForList("getHotelInfo", hm);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return hmList;
 	}
+	
+	// 根据类型获取区县旅行社、2酒店、3餐饮数据汇总星级汇总数据
+		public static List<HashMap> sumHotel(HashMap hm) {
+			List<HashMap> hmList = null;
+			try {
+				hmList = (List<HashMap>) sqlMapClient.queryForList("sumHotel", hm);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return hmList;
+		}
 }

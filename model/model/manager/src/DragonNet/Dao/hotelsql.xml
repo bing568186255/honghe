@@ -3,13 +3,79 @@
     PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"        
     "http://ibatis.apache.org/dtd/sql-map-2.dtd">
 <sqlMap>
-		<!-- <select id="getXMSTJ" parameterClass="java.util.HashMap"
+	<sql id="queryNewXYDJ">
+		(
+			SELECT
+				*
+			FROM
+				(
+					SELECT
+						b.*, ROW_NUMBER () OVER (
+							PARTITION BY b."BPGDXMC"
+							ORDER BY
+								b."PGRQ" DESC
+						) AS rk
+					FROM
+						HHLY_XYDJ b
+				) c
+			WHERE
+				c.rk = 1
+		)
+	</sql>
+		
+
+	<select id="getHotelInfo" parameterClass="java.util.HashMap"
 		resultClass="java.util.HashMap">
-		select b."BM" as "bm" ,b."MC" as "qxmc" ,nvl(a."xms",0) as "xms"
+		select 
+		hh."ID" as "id",
+		hh."MC" as "mc",
+		hh."LX" as "lx",
+		hh."TYSHXYBM" as "tyshxybm",
+		hh."GM" as "gm",
+		hh."FZR" as "fzr",
+		hh."FZRDH" as "fzrdh",
+		hh."DZ" as "dz",
+		hh."DZGPS" as "dzgps",
+		hh."FWFW" as "fwfw",
+		hh."ZT" as "zt",
+		hh."SM" as "sm",
+		dd."PGLX" as "pglx",
+		dd."BPGDXMC" as "bpgdxmc",
+		dd."PGDXLX" as "pgdxlx",
+		dd."PGRQ" as "pgrq",
+		dd."PGFS" as "pgfs"
+		from "HHLY_JC" hh 
+		left join 
+		<include refid="queryNewXYDJ"/> dd on hh."ID" = dd."BPGDXMC"
+		<dynamic prepend="where">
+			<isPropertyAvailable prepend="and" property="qxbm">
+			hh."SXBM"=#qxbm#
+			</isPropertyAvailable>
+			<isPropertyAvailable prepend="and" property="type">
+				hh."LX" in
+				<iterate open=" (" close=")" conjunction="," property="type">
+					#type[]#
+				</iterate>
+			</isPropertyAvailable>
+		</dynamic>
+	</select>
+	
+	<select id="sumHotel" parameterClass="java.util.HashMap"
+		resultClass="java.util.HashMap">
+		select t."PGFS" as "pg" ,count(1) as "count"
 		from
-		"HHLY_QXDY" b
-		left join
-		(select "QXBM" , count("ID") as "xms" FROM "HHLY_LYXM" GROUP BY "QXBM") a
-		on a."QXBM" = b."BM"
-	</select> -->
+		(select *
+			from "HHLY_JC" hh 
+			left join 
+			<include refid="queryNewXYDJ"/> dd on hh."ID" = dd."BPGDXMC"
+			<dynamic prepend="where">
+				<isPropertyAvailable prepend="and" property="qxbm">
+				hh."SXBM"=#qxbm#
+				</isPropertyAvailable>
+				<isPropertyAvailable prepend="and" property="type">
+					hh."LX" =#type#
+				</isPropertyAvailable>
+			</dynamic>
+		)t group by t."PGFS"
+	</select>
 </sqlMap>  

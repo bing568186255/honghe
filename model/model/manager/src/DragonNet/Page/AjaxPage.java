@@ -414,7 +414,7 @@ public class AjaxPage extends HttpServlet {
 	}
 
 	public static void main(String[] args) throws IOException {
-		System.out.println(GlobalFun.getCoordinate("红河县"));
+		System.out.println(GlobalFun.getRendomCoordinate("泸西县"));
 	}
 	
 	/**
