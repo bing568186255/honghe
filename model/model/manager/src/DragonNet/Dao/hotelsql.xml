@@ -42,7 +42,7 @@
 		dd."PGLX" as "pglx",
 		dd."BPGDXMC" as "bpgdxmc",
 		dd."PGDXLX" as "pgdxlx",
-		dd."PGRQ" as "pgrq",
+		to_char(dd."PGRQ",'yyyy-MM-dd') as "pgrq",
 		dd."PGFS" as "pgfs"
 		from "HHLY_JC" hh 
 		left join 
