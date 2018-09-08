@@ -57,11 +57,14 @@
 			hh."SXBM"=#qxbm#
 			</isPropertyAvailable>
 			<isPropertyAvailable prepend="and" property="type">
+				hh."LX" = #type#
+			</isPropertyAvailable>
+			<!-- <isPropertyAvailable prepend="and" property="type">
 				hh."LX" in
 				<iterate open=" (" close=")" conjunction="," property="type">
 					#type[]#
 				</iterate>
-			</isPropertyAvailable>
+			</isPropertyAvailable> -->
 		</dynamic>
 	</select>
 	

@@ -83,7 +83,7 @@ public class HotelPage  extends HttpServlet {
 		String type = (String) request.getParameter("type");
 		String lx = (String) request.getParameter("lx");
 		HashMap hm = new HashMap();
-		hm.put("type", buildQueryList(type));
+		//hm.put("type", buildQueryList(type));
 		List<HashMap> qxList = DBOperate.getQXinfo(hm);
 		List<HashMap<String, Object>> positionReturn = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(qxList)) {
@@ -102,12 +102,23 @@ public class HotelPage  extends HttpServlet {
 					e.printStackTrace();
 				}
 				//该县下面的1旅行社、2酒店、3餐饮信息
-				List<HashMap> hotelList = HotelDBOperate.getHotelInfo(hm);
-				if(!CollectionUtils.isEmpty(hotelList)){
-					for(HashMap mm : hotelList){
-						mm.put("qxmc", qxmap.get("MC"));
+				for(int i =1 ;i<=3 ; i++){
+					hm.put("type", i);
+					List<HashMap> lxsList = HotelDBOperate.getHotelInfo(hm);
+					if(!CollectionUtils.isEmpty(lxsList)){
+						for(HashMap mm : lxsList){
+							mm.put("qxmc", qxmap.get("MC"));
+						}
+						if(i==1){
+							map.put("lxsList", lxsList);
+						}
+						if(i==2){
+							map.put("jdList", lxsList);
+						}
+						if(i==3){
+							map.put("cyList", lxsList);
+						}
 					}
-					map.put("list", hotelList);
 				}
 				buildSumInfo(qxmap.get("BM").toString(),qxmap.get("MC").toString(),type,map,lx);
 				positionReturn.add(map);
