@@ -17,6 +17,11 @@
 						) AS rk
 					FROM
 						HHLY_XYDJ b
+						<dynamic prepend="where">
+							<isPropertyAvailable prepend="and" property="lx">
+								b."PGLX" = #lx#
+							</isPropertyAvailable>
+						</dynamic>
 				) c
 			WHERE
 				c.rk = 1
@@ -62,7 +67,7 @@
 	
 	<select id="sumHotel" parameterClass="java.util.HashMap"
 		resultClass="java.util.HashMap">
-		select t."PGFS" as "pg" ,count(1) as "count"
+		select t."PGFS" as "pg" ,count(t."PGFS") as "count"
 		from
 		(select *
 			from "HHLY_JC" hh 

@@ -81,6 +81,7 @@ public class HotelPage  extends HttpServlet {
 		HashMap hmRet = new HashMap();
 		checkUser(request, response);
 		String type = (String) request.getParameter("type");
+		String lx = (String) request.getParameter("lx");
 		HashMap hm = new HashMap();
 		hm.put("type", buildQueryList(type));
 		List<HashMap> qxList = DBOperate.getQXinfo(hm);
@@ -108,7 +109,7 @@ public class HotelPage  extends HttpServlet {
 					}
 					map.put("list", hotelList);
 				}
-				buildSumInfo(qxmap.get("BM").toString(),qxmap.get("MC").toString(),type,map);
+				buildSumInfo(qxmap.get("BM").toString(),qxmap.get("MC").toString(),type,map,lx);
 				positionReturn.add(map);
 			}
 		}
@@ -127,9 +128,13 @@ public class HotelPage  extends HttpServlet {
 	 * @throws IOException 
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void buildSumInfo(String bm,String mc,String type,HashMap map) throws IOException{
+	private void buildSumInfo(String bm,String mc,String type,HashMap map,String lx) throws IOException{
 		System.out.println(mc);
 		HashMap hset = new HashMap<>();
+		if(StringUtils.isEmpty(lx)){
+			lx = "1";
+		}
+		hset.put("lx", lx);
 		hset.put("qxbm", bm);
 		if(StringUtils.isEmpty(type)){
 			//旅行社
