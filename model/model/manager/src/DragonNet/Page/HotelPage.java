@@ -68,6 +68,7 @@ public class HotelPage  extends HttpServlet {
 	
 	}
 	
+	
 	/**
 	 * 酒店餐饮旅行社地图接口  1旅行社、2酒店、3餐饮
 	 * @param request
@@ -173,9 +174,10 @@ public class HotelPage  extends HttpServlet {
 				cyMap.put("cyList", cyList);
 				map.put("cyMap", cyMap);
 			}
-			
+			return;
 		}
-		if("1".equals(type)){
+		List<String> types = buildQueryList(type);
+		if(types.contains("1")){
 			HashMap lxyMap = new HashMap<>();
 			hset.put("type", 1);
 			List<HashMap> lxsList = HotelDBOperate.sumHotel(hset);
@@ -185,7 +187,7 @@ public class HotelPage  extends HttpServlet {
 				map.put("lxyMap", lxyMap);
 			}
 		}
-		if("2".equals(type)){
+		if(types.contains("2")){
 			HashMap jdMap = new HashMap<>();
 			hset.put("type", 2);
 			List<HashMap> jdList = HotelDBOperate.sumHotel(hset);
@@ -195,7 +197,7 @@ public class HotelPage  extends HttpServlet {
 				map.put("jdMap", jdMap);
 			}
 		}
-		if("3".equals(type)){
+		if(types.contains("3")){
 			HashMap cyMap = new HashMap<>();
 			hset.put("type", 3);
 			List<HashMap> cyList = HotelDBOperate.sumHotel(hset);
