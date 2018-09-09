@@ -82,6 +82,7 @@ public class HotelPage  extends HttpServlet {
 		HashMap hmRet = new HashMap();
 		checkUser(request, response);
 		String type = (String) request.getParameter("type");
+		String secondType = (String) request.getParameter("secondType");
 		String lx = (String) request.getParameter("lx");
 		HashMap hm = new HashMap();
 		//hm.put("type", buildQueryList(type));
@@ -110,13 +111,16 @@ public class HotelPage  extends HttpServlet {
 						for(HashMap mm : lxsList){
 							mm.put("qxmc", qxmap.get("MC"));
 						}
-						if(i==1){
+						if((i==1 && StringUtils.isEmpty(secondType)) 
+								|| (!StringUtils.isEmpty(secondType) && secondType.contains("1"))){
 							map.put("lxsList", lxsList);
 						}
-						if(i==2){
+						if((i==2 && StringUtils.isEmpty(secondType)) 
+								|| (!StringUtils.isEmpty(secondType) && secondType.contains("2"))){
 							map.put("jdList", lxsList);
 						}
-						if(i==3){
+						if((i==3 && StringUtils.isEmpty(secondType)) 
+								|| (!StringUtils.isEmpty(secondType) && secondType.contains("3"))){
 							map.put("cyList", lxsList);
 						}
 					}
