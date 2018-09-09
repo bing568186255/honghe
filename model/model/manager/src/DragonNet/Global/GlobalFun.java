@@ -520,6 +520,45 @@ public final class GlobalFun {
 		if ("泸西县".equals(addr)) {
 			return new String[] { "103.766196", "24.532025" };
 		}
+		if ("红河州".equals(addr)) {
+			return new String[] { "103.38406", "23.367718" };
+		}
+		if ("个旧市".equals(addr)) {
+			return new String[] { "103.149155", "23.305693" };
+		}
+		if ("蒙自市".equals(addr)) {
+			return new String[] { "103.51669", "23.338657" };
+		}
+		if ("屏边苗族自治县".equals(addr)) {
+			return new String[] { "103.74842", "23.102936" };
+		}
+		if ("建水县".equals(addr)) {
+			return new String[] { "102.88967", "23.683914" };
+		}
+		if ("石屏县".equals(addr)) {
+			return new String[] { "102.456245", "23.74626" };
+		}
+		if ("弥勒市".equals(addr)) {
+			return new String[] { "103.44532", "24.251509" };
+		}
+		if ("元阳县".equals(addr)) {
+			return new String[] { "102.819565", "23.069202" };
+		}
+		if ("红河县".equals(addr)) {
+			return new String[] { "102.24335", "23.250956" };
+		}
+		if ("开远市".equals(addr)) {
+			return new String[] { "103.400154", "23.729055" };
+		}
+		if ("绿春县".equals(addr)) {
+			return new String[] { "102.24532", "22.879206" };
+		}
+		if ("河口瑶族自治县".equals(addr)) {
+			return new String[] { "103.82345", "22.787363" };
+		}
+		if ("金平苗族瑶族傣族自治县".equals(addr)) {
+			return new String[] { "103.10296", "22.782362" };
+		}
 		String lng = null;// 经度
 		String lat = null;// 纬度
 		String address = null;
@@ -528,7 +567,7 @@ public final class GlobalFun {
 		} catch (UnsupportedEncodingException e1) {
 			e1.printStackTrace();
 		}
-		// System.out.println(address);
+		System.out.println(address);
 		String url = "http://api.map.baidu.com/geocoder/v2/?output=json&ak=iV88vKWCxcFd0XkPBT6G0xBG8Fa1Geim&address="
 				+ address;
 		URL myURL = null;
