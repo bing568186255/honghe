@@ -110,6 +110,15 @@ public class HotelPage  extends HttpServlet {
 					if(!CollectionUtils.isEmpty(lxsList)){
 						for(HashMap mm : lxsList){
 							mm.put("qxmc", qxmap.get("MC"));
+							//根据id 查询改企业所有的指数
+							//VARCHAR2(10)	1企业诚信指数、2规范指数、3体验指数、4品质指数、5行业等级
+							String id = (String) mm.get("id");
+							mm.put("qyxx", buildStar(id,"1"));
+							mm.put("gfxx", buildStar(id,"2"));
+							mm.put("tyxx", buildStar(id,"3"));
+							mm.put("pzxx", buildStar(id,"4"));
+							mm.put("hyxx", buildStar(id,"5"));
+							
 						}
 						if((i==1 && StringUtils.isEmpty(secondType)) 
 								|| (!StringUtils.isEmpty(secondType) && secondType.contains("1"))){
@@ -134,6 +143,32 @@ public class HotelPage  extends HttpServlet {
 		String json = JSONObject.fromObject(hmRet).toString();
 		response.getOutputStream().write(json.getBytes("UTF-8"));
 
+	}
+	
+	/**
+	 * 返回星星
+	 * @return
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private String buildStar(String id,String type){
+		HashMap map = new HashMap<>();
+		map.put("id", id);
+		map.put("type", type);
+		List<HashMap> lxsList = HotelDBOperate.getZS(map);
+		if(!CollectionUtils.isEmpty(lxsList)){
+			HashMap dx = lxsList.get(0);
+			if(dx != null && dx.get("PGFS") != null){
+				Integer pgfs = Integer.valueOf(dx.get("PGFS").toString());
+				StringBuffer sb = new StringBuffer();
+				for(int i = 0 ; i<pgfs ; i++){
+					sb.append("★");
+				}
+				return sb.toString();
+			}
+		}
+		
+		return "";
+		
 	}
 	
 	/**

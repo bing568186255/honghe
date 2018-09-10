@@ -86,4 +86,27 @@
 			</dynamic>
 		)t group by t."PGFS"
 	</select>
+	
+	<select id="getZS" parameterClass="java.util.HashMap"
+		resultClass="java.util.HashMap">
+			SELECT
+				*
+			FROM
+				(
+					SELECT
+						*
+					FROM
+						HHLY_XYDJ
+					WHERE
+						"BPGDXMC" = #id#
+					AND "PGLX" =#type#
+					ORDER BY
+						"PGRQ" desc
+				)
+			WHERE
+				ROWNUM = 1
+	</select>
+	
+	
+	
 </sqlMap>  
