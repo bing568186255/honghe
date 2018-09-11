@@ -239,65 +239,116 @@
 		order by rq desc
 
 	</select>
-	<select id="getXCTBYDW" parameterClass="java.util.HashMap"
-		resultClass="java.util.HashMap">
-		SELECT a."dw"
-		,b."url" ,b."xmid"
+<!-- 	<select id="getXCTBYDW" parameterClass="java.util.HashMap" -->
+<!-- 		resultClass="java.util.HashMap"> -->
+<!-- 		SELECT a."dw" -->
+<!-- 		,b."url" ,b."xmid" -->
 
-		from
+<!-- 		from -->
 
-		HHLY_DW a
+<!-- 		HHLY_DW a -->
 
+<!-- 		LEFT JOIN HHLY_XCT b -->
+
+<!-- 		ON a."id" = b."dwid" -->
+<!-- 		where -->
+<!-- 		b."xmid"=#xmid# -->
+<!-- 		and a."id"=#dw# -->
+
+
+
+<!-- 	</select> -->
+
+
+
+
+<!-- 	<select id="xmDetail" parameterClass="java.util.HashMap" -->
+<!-- 		resultClass="java.util.HashMap"> -->
+<!-- 		select -->
+<!-- 		a."XMM" as "xmm", -->
+<!-- 		a."XMDZ" as "xmdz", -->
+<!-- 		a."XMGK" as "xmgk", -->
+<!-- 		a."SZFW" -->
+<!-- 		as "szfw", -->
+<!-- 		a."XMSX" as "xmsx", -->
+<!-- 		a."XMLX" as "xmlx", -->
+<!-- 		a."XMXZ" as "xmxz", -->
+<!-- 		a."ZTZ" as "ztz", -->
+<!-- 		a."XMYT" as "xmyt", -->
+<!-- 		a."GHYD" as "ghyd", -->
+<!-- 		a."ZDXMXZJWH" -->
+<!-- 		as "zdxmxzjwh", -->
+<!-- 		to_char(a."KGSJ",'YYYY-MM-DD') as "kgsj", -->
+<!-- 		to_char(a."JSZQ",'YYYY-MM-DD') as "jszq", -->
+<!-- 		a."SJLJTZ" as "sjljtz", -->
+<!-- 		a."XMZGDW" as "xmzgdw", -->
+<!-- 		a."XMFZRDH" as "xmfzrdh", -->
+<!-- 		a."XMFZR" as "xmfzr", -->
+<!-- 		b."TZDWMC" as "tzdwmc", -->
+<!-- 		b."TZXZ" as "tzxz", -->
+<!-- 		b."TZBL" as "tzbl", -->
+<!-- 		b."BZ" as -->
+<!-- 		"bz", -->
+<!-- 		b."TZDWQK" as "tzdwqk" -->
+<!-- 		from -->
+<!-- 		<include refid="lyxm" /> -->
+<!-- 		a -->
+<!-- 		left join -->
+<!-- 		"HHLY_XMTZQKTB" b on a."XMM" = b."XMMC" -->
+<!-- 		<isPropertyAvailable prepend="and" property="xmmc"> -->
+<!-- 			a."XMM"=#xmmc# -->
+<!-- 		</isPropertyAvailable> -->
+<!-- 	</select> -->
+
+
+	<select id="getXMKFQK" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		select
+		 a."ID" 
+		 ,a."XMID"
+		 ,to_char(a."RQ",'yyyy-MM-dd') RQ
+		 ,a."XMMC"
+		 ,a."JSJD" 
+		 , a."SM" 
+		 ,'test' as sjtby 
+		 ,b."url" 
+		 ,1 as tpsl 
+		 ,c."dw"
+		from 
+		"HHLY_XMKFQKTB"  a
+		
+		LEFT JOIN "HHLY_XCT"  b 
+		
+		on a."XMID" = b."xmid"
+		
+		LEFT JOIN "HHLY_DW"  c 
+		
+		ON b."dwid" = c."id"
+		<dynamic prepend="where">
+			<isPropertyAvailable prepend="and" property="id">
+			a."XMID"=#id#
+			</isPropertyAvailable>
+			<isPropertyAvailable prepend="and" property="xmrq">
+			to_char(a."RQ",'yyyy-MM-dd')=#xmrq#
+			</isPropertyAvailable>
+		</dynamic>
+		order  by rq desc
+		
+	</select>
+	<select id="getXCTBYDW" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT  a."dw" 
+		,b."url" ,b."xmid" 
+		
+		from 
+		
+		HHLY_DW a  
+		
 		LEFT JOIN HHLY_XCT b
-
+		
 		ON a."id" = b."dwid"
-		where
+		where 
 		b."xmid"=#xmid#
 		and a."id"=#dw#
 
-
-
-	</select>
-
-
-
-
-	<select id="xmDetail" parameterClass="java.util.HashMap"
-		resultClass="java.util.HashMap">
-		select
-		a."XMM" as "xmm",
-		a."XMDZ" as "xmdz",
-		a."XMGK" as "xmgk",
-		a."SZFW"
-		as "szfw",
-		a."XMSX" as "xmsx",
-		a."XMLX" as "xmlx",
-		a."XMXZ" as "xmxz",
-		a."ZTZ" as "ztz",
-		a."XMYT" as "xmyt",
-		a."GHYD" as "ghyd",
-		a."ZDXMXZJWH"
-		as "zdxmxzjwh",
-		to_char(a."KGSJ",'YYYY-MM-DD') as "kgsj",
-		to_char(a."JSZQ",'YYYY-MM-DD') as "jszq",
-		a."SJLJTZ" as "sjljtz",
-		a."XMZGDW" as "xmzgdw",
-		a."XMFZRDH" as "xmfzrdh",
-		a."XMFZR" as "xmfzr",
-		b."TZDWMC" as "tzdwmc",
-		b."TZXZ" as "tzxz",
-		b."TZBL" as "tzbl",
-		b."BZ" as
-		"bz",
-		b."TZDWQK" as "tzdwqk"
-		from
-		<include refid="lyxm" />
-		a
-		left join
-		"HHLY_XMTZQKTB" b on a."XMM" = b."XMMC"
-		<isPropertyAvailable prepend="and" property="xmmc">
-			a."XMM"=#xmmc#
-		</isPropertyAvailable>
 	</select>
 
 
