@@ -210,23 +210,26 @@
 		 a."ID" 
 		 ,a."XMID"
 		 ,to_char(a."RQ",'yyyy-MM-dd') RQ
-		 ,a."XMMC"
-		 ,a."JSJD" 
+	   ,D.XMM XMMC
+		 ,d."XMJD" JSJD 
 		 , a."SM" 
-		 ,'test' as sjtby 
-		 ,b."url" 
-		 ,1 as tpsl 
-		 ,c."dw"
+		 ,d."SJTBY" as sjtby 
+		 ,b."TPLJ" 
+		 ,a."TPSL" as tpsl 
+		 ,c."TPLJ"  AS DW
 		from 
 		"HHLY_XMKFQKTB"  a
 		
-		LEFT JOIN "HHLY_XCT"  b 
+		LEFT JOIN "HHLY_SCTP"  b 
 		
-		on a."XMID" = b."xmid"
+		on a."ID" = b."XMKFQKID"
 		
-		LEFT JOIN "HHLY_DW"  c 
+		LEFT JOIN "HHLY_XMTPLX"  c 
 		
-		ON b."dwid" = c."id"
+		ON b."TPLX" = c."ID"
+		
+		LEFT JOIN "HHLY_LYXM" d 
+		ON A."XMID" = d."CODE"
 		<dynamic prepend="where">
 			<isPropertyAvailable prepend="and" property="id">
 			a."XMID"=#id#
