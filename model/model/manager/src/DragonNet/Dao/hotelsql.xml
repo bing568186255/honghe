@@ -107,6 +107,32 @@
 				ROWNUM = 1
 	</select>
 	
+	<select id="getHighSumInfo" parameterClass="java.util.HashMap"
+		resultClass="java.util.HashMap">
+		select * from (
+			select
+			 hh."MC" as "mc",
+			 dd."PGFS" as "pg"
+			 from 
+			<include refid="queryNewXYDJ"/> dd 
+			left join HHLY_JC hh on  hh."ID" = dd."BPGDXMC"
+			order by dd."PGFS" desc 
+		) where rownum &lt;= 10
+	</select>
+	
+		<select id="getLowSumInfo" parameterClass="java.util.HashMap"
+		resultClass="java.util.HashMap">
+		select * from (
+			select
+			 hh."MC" as "mc",
+			 dd."PGFS" as "pg"
+			  from 
+			<include refid="queryNewXYDJ"/> dd 
+			left join HHLY_JC hh on  hh."ID" = dd."BPGDXMC"
+			order by dd."PGFS" asc 
+		) where rownum &lt;= 10
+	</select>
+	
 	
 	
 </sqlMap>  

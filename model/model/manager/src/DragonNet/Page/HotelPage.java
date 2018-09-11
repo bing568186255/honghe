@@ -145,6 +145,34 @@ public class HotelPage  extends HttpServlet {
 
 	}
 	
+	
+	/**
+	 *汇总酒店餐饮信息
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void lvxmSumInfo(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		HashMap hmRet = new HashMap();
+		checkUser(request, response);
+		String lx = (String) request.getParameter("lx");
+		HashMap<String, Object> positionReturn = new HashMap<>();
+		if(StringUtils.isEmpty(lx)){
+			lx ="1";
+		}
+		HashMap hm = new HashMap();
+		hm.put("lx", lx);
+		positionReturn.put("highSumList", HotelDBOperate.getHighSumInfo(hm));
+		positionReturn.put("lowSumList", HotelDBOperate.getLowSumInfo(hm));
+		hmRet.put("status", 200);
+		hmRet.put("rows", positionReturn);
+		String json = JSONObject.fromObject(hmRet).toString();
+		response.getOutputStream().write(json.getBytes("UTF-8"));
+	}
+	
 	/**
 	 * 返回星星
 	 * @return

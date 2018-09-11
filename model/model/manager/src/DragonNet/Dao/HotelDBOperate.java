@@ -56,4 +56,52 @@ public class HotelDBOperate {
 		}
 		return hmList;
 	}
+	
+	// 根据对象查询指数
+	public static List<HashMap> getHighSumInfo(HashMap hm) {
+		List<HashMap> hmList = null;
+		try {
+			hmList = (List<HashMap>) sqlMapClient.queryForList("getHighSumInfo", hm);
+			if(!CollectionUtils.isEmpty(hmList)){
+				for(HashMap map : hmList){
+					if(hm.get("lx") != null){
+						String lx = hm.get("lx").toString();
+						if("1".equals(lx)){
+							map.put("pg", map.get("pg").toString()+"分");
+						}
+						if("5".equals(lx)){
+							map.put("pg", map.get("pg").toString()+"星");
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return hmList;
+	}
+	
+	// 根据对象查询指数
+	public static List<HashMap> getLowSumInfo(HashMap hm) {
+		List<HashMap> hmList = null;
+		try {
+			hmList = (List<HashMap>) sqlMapClient.queryForList("getLowSumInfo", hm);
+			if(!CollectionUtils.isEmpty(hmList)){
+				for(HashMap map : hmList){
+					if(hm.get("lx") != null){
+						String lx = hm.get("lx").toString();
+						if("1".equals(lx)){
+							map.put("pg", map.get("pg").toString()+"分");
+						}
+						if("5".equals(lx)){
+							map.put("pg", map.get("pg").toString()+"星");
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return hmList;
+	}
 }
