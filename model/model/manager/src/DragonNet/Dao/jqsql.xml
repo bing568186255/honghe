@@ -16,6 +16,7 @@
 	   select to_char(RQ,'yyyy-mm') "SJ"  , sum(YKSLA +YKSLA+YKSLC+YKSLD+YKSLE+YKSLF+YKSL) "YKS"   
 	   from "HHLY_SJZQ" 
 	   where "JQID"=#jqid#
+	   and to_char(RQ,'yyyy-mm') >= to_char(trunc(sysdate,'YYYY')-1,'yyyy')
        group by  to_char(RQ,'yyyy-mm')
 	   order by to_char(RQ,'yyyy-mm')
 	</select>
