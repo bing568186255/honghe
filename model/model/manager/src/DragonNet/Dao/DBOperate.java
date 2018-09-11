@@ -139,4 +139,65 @@ public class DBOperate {
 		}
 		return hmList;
 	}
+	
+	//读取位置信息
+	public static String getLocation(String table,String field, String id){
+		String ret = null;
+		try {
+			HashMap hm = new HashMap();
+			hm.put("table",table);
+			hm.put("field",field);
+			hm.put("id",id);
+			ret = (String)sqlMapClient.queryForObject("getLocation",hm);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return ret;		
+	}
+	//修改位置信息
+	public static boolean updateLocation(String table,String field, String id,String gps){
+		boolean ret = false;
+		try {
+			HashMap hm = new HashMap();
+			hm.put("table",table);
+			hm.put("field",field);
+			hm.put("id",id);
+			hm.put("zb", gps);
+			sqlMapClient.update("updateLocation",hm);
+			ret = true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}		
+		return ret;
+	}
+	
+	//读取项目位置和范围
+	public static HashMap<String,Object> getLyxmGPS(String id){
+		HashMap<String,Object> ret = null;
+		try {
+			ret = (HashMap<String,Object>)sqlMapClient.queryForObject("getLyxmGPS",id);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return ret;		
+	}
+	//修改项目位置和范围
+	public static boolean updateLyxmGPS(String xmzb, String xmfw, String id){
+		boolean ret = false;
+		try {
+			HashMap hm = new HashMap();
+			hm.put("id",id);
+			if (null != xmzb && !xmzb.isEmpty()){
+				hm.put("xmzb", xmzb);
+			}
+			if (null != xmfw && !xmfw.isEmpty()){
+				hm.put("xmfw", xmfw);
+			}
+			sqlMapClient.update("updateLyxmGPS",hm);
+			ret = true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}		
+		return ret;
+	}
 }
