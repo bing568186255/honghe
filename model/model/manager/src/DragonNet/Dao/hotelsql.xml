@@ -112,10 +112,14 @@
 		select * from (
 			select
 			 hh."MC" as "mc",
-			 dd."PGFS" as "pg"
+			 dd."PGFS" as "pg",
+			 qq."BM" as "bm",
+			 qq."MC" as "qxmc",
+			 hh."DZ" as "dz"
 			 from 
 			<include refid="queryNewXYDJ"/> dd 
 			left join HHLY_JC hh on  hh."ID" = dd."BPGDXMC"
+			left join HHLY_QXDY qq on hh."SXBM" = qq."BM"
 			order by dd."PGFS" desc 
 		) where rownum &lt;= 10
 	</select>
@@ -125,10 +129,14 @@
 		select * from (
 			select
 			 hh."MC" as "mc",
-			 dd."PGFS" as "pg"
-			  from 
+			 dd."PGFS" as "pg",
+			 qq."BM" as "bm",
+			 qq."MC" as "qxmc",
+			 hh."DZ" as "dz"
+			 from 
 			<include refid="queryNewXYDJ"/> dd 
 			left join HHLY_JC hh on  hh."ID" = dd."BPGDXMC"
+			left join HHLY_QXDY qq on hh."SXBM" = qq."BM"
 			order by dd."PGFS" asc 
 		) where rownum &lt;= 10
 	</select>

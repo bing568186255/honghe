@@ -527,9 +527,9 @@ public final class GlobalFun {
 			return new String[] { "103.149155", "23.305693" };
 		}
 		if ("蒙自市".equals(addr)) {
-			return new String[] { "103.51669", "23.338657" };
+			return new String[] { "103.371489","23.401943" };
 		}
-		if ("屏边苗族自治县".equals(addr)) {
+		if ("屏边县".equals(addr)) {
 			return new String[] { "103.74842", "23.102936" };
 		}
 		if ("建水县".equals(addr)) {
@@ -553,10 +553,10 @@ public final class GlobalFun {
 		if ("绿春县".equals(addr)) {
 			return new String[] { "102.24532", "22.879206" };
 		}
-		if ("河口瑶族自治县".equals(addr)) {
+		if ("河口县".equals(addr)) {
 			return new String[] { "103.82345", "22.787363" };
 		}
-		if ("金平苗族瑶族傣族自治县".equals(addr)) {
+		if ("金平县".equals(addr)) {
 			return new String[] { "103.10296", "22.782362" };
 		}
 		String lng = null;// 经度
