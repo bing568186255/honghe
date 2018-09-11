@@ -121,15 +121,15 @@ public class HotelPage  extends HttpServlet {
 							
 						}
 						if((i==1 && StringUtils.isEmpty(secondType)) 
-								|| (!StringUtils.isEmpty(secondType) && secondType.contains("1"))){
+								|| (!StringUtils.isEmpty(secondType) && secondType.contains("1") && i ==1)){
 							map.put("lxsList", lxsList);
 						}
 						if((i==2 && StringUtils.isEmpty(secondType)) 
-								|| (!StringUtils.isEmpty(secondType) && secondType.contains("2"))){
+								|| (!StringUtils.isEmpty(secondType) && secondType.contains("2") && i ==2)){
 							map.put("jdList", lxsList);
 						}
 						if((i==3 && StringUtils.isEmpty(secondType)) 
-								|| (!StringUtils.isEmpty(secondType) && secondType.contains("3"))){
+								|| (!StringUtils.isEmpty(secondType) && secondType.contains("3") && i ==3)){
 							map.put("cyList", lxsList);
 						}
 					}
