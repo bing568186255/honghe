@@ -136,8 +136,8 @@ public class JQPage extends HttpServlet {
 									lastYearJqRs.add(rsMap);
 								}
 							}
-							jqRsEnd.put(year, currentYearJqRs);
-							jqRsEnd.put(lastYear, lastYearJqRs);
+							jqRsEnd.put("yearNow", currentYearJqRs);
+							jqRsEnd.put("yearLast", lastYearJqRs);
 							
 							qxJq.put("jqrs", jqRsEnd);
 						}
