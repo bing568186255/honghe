@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -118,7 +119,27 @@ public class JQPage extends HttpServlet {
 							HashMap hm2 = new HashMap();
 							hm2.put("jqid", jqid);
 							List<HashMap<String, Object>> jqRs = JQDBOperate.getJQRS(hm2);
-							qxJq.put("jqrs", jqRs);
+							List<HashMap<String, Object>> lastYearJqRs = new ArrayList<>();
+							List<HashMap<String, Object>> currentYearJqRs = new ArrayList<>();
+							HashMap<String, List<HashMap<String, Object>>> jqRsEnd= new HashMap<>();
+							Calendar date = Calendar.getInstance();
+							String year = String.valueOf(date.get(Calendar.YEAR));
+							date.add(Calendar.YEAR, -1);
+							String lastYear = String.valueOf(date.get(Calendar.YEAR));
+							System.out.println(lastYear);
+							
+							for (HashMap<String, Object> rsMap : jqRs) {
+								String sj = rsMap.get("SJ").toString();
+								if(sj.contains(year)) {
+									currentYearJqRs.add(rsMap);
+								}else {
+									lastYearJqRs.add(rsMap);
+								}
+							}
+							jqRsEnd.put(year, currentYearJqRs);
+							jqRsEnd.put(lastYear, lastYearJqRs);
+							
+							qxJq.put("jqrs", jqRsEnd);
 						}
 					}
 					

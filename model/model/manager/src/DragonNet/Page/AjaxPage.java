@@ -460,4 +460,104 @@ public class AjaxPage extends HttpServlet {
 		 * response.getOutputStream().write(json.getBytes("UTF-8")); return; }
 		 */
 	}
+	
+	
+	//获取指定对象位置和区域信息
+	public void getLocation(HttpServletRequest request,HttpServletResponse response)
+			throws ServletException,IOException{
+		HashMap hmRet = new HashMap();
+		SysUser user = (SysUser)request.getSession().getAttribute(GlobalConst.SESS_ATTR_SYSUSER);
+		if (null == user){
+			hmRet.put("status", 400);
+			hmRet.put("msg", "请登录后操作！");
+			String json = JSONObject.fromObject(hmRet).toString();
+			response.getOutputStream().write(json.getBytes("UTF-8"));			
+			return;
+		}
+		String editInfo = (String)request.getParameter("editinfo");
+		if (null == editInfo || editInfo.isEmpty()){
+			hmRet.put("status", 400);
+			hmRet.put("msg", "参数错误！");
+			String json = JSONObject.fromObject(hmRet).toString();
+			response.getOutputStream().write(json.getBytes("UTF-8"));			
+			return;
+		}
+		HashMap hmInfo = (HashMap)request.getSession().getAttribute(editInfo);
+		if (null == hmInfo){
+			hmRet.put("status", 400);
+			hmRet.put("msg", "参数错误！");
+			String json = JSONObject.fromObject(hmRet).toString();
+			response.getOutputStream().write(json.getBytes("UTF-8"));			
+			return;
+		}
+
+		String table = (String)hmInfo.get("table");
+		String field = (String)hmInfo.get("field");
+		String id = (String)hmInfo.get("id");
+		HashMap retInfo = null;
+		if(table.equals("HHLY_LYXM")){
+			retInfo = DBOperate.getLyxmGPS(id);
+		}else{
+			retInfo = new HashMap();
+			retInfo.put("ZB",DBOperate.getLocation(table, field, id));
+		}
+		hmRet.put("status", 200);
+		hmRet.put("data", retInfo);											
+		String json = JSONObject.fromObject(hmRet).toString();
+		response.getOutputStream().write(json.getBytes("UTF-8"));			
+	}
+	
+	//增加或修改对象位置信息
+	public void editLocation(HttpServletRequest request,HttpServletResponse response)
+			throws ServletException,IOException{
+		HashMap hmRet = new HashMap();
+		SysUser user = (SysUser)request.getSession().getAttribute(GlobalConst.SESS_ATTR_SYSUSER);
+		if (null == user){
+			hmRet.put("status", 400);
+			hmRet.put("msg", "请登录后操作！");
+			String json = JSONObject.fromObject(hmRet).toString();
+			response.getOutputStream().write(json.getBytes("UTF-8"));			
+			return;
+		}
+		
+		String editInfo = (String)request.getParameter("editinfo");
+		String zb = (String)request.getParameter("zb");
+		String fw = (String)request.getParameter("fw");
+		if (null == editInfo || editInfo.isEmpty() ||
+			((null == zb || zb.isEmpty()) && (null == fw || fw.isEmpty()))
+			){
+			hmRet.put("status", 400);
+			hmRet.put("msg", "参数错误！");
+			String json = JSONObject.fromObject(hmRet).toString();
+			response.getOutputStream().write(json.getBytes("UTF-8"));			
+			return;
+		}
+		
+		HashMap hmInfo = (HashMap)request.getSession().getAttribute(editInfo);
+		if (null == hmInfo){
+			hmRet.put("status", 400);
+			hmRet.put("msg", "参数错误！");
+			String json = JSONObject.fromObject(hmRet).toString();
+			response.getOutputStream().write(json.getBytes("UTF-8"));			
+			return;
+		}
+		String table = (String)hmInfo.get("table");
+		String field = (String)hmInfo.get("field");
+		String id = (String)hmInfo.get("id");
+		
+		hmRet.put("status", 200);
+		if(table.equals("HHLY_LYXM")){
+			if (!DBOperate.updateLyxmGPS(zb, fw, id)){
+				hmRet.put("status", 400);
+				hmRet.put("msg", "数据库操作失败！");
+			}
+		}else{
+			if (!DBOperate.updateLocation(table, field, id, zb)){
+				hmRet.put("status", 400);
+				hmRet.put("msg", "数据库操作失败！");
+			}
+		}
+		String json = JSONObject.fromObject(hmRet).toString();
+		response.getOutputStream().write(json.getBytes("UTF-8"));			
+	}
 }
