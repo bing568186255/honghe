@@ -3,6 +3,8 @@ package DragonNet.Dao;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import com.ibatis.sqlmap.client.SqlMapClient;
 
 public class HotelDBOperate {
@@ -24,6 +26,20 @@ public class HotelDBOperate {
 		List<HashMap> hmList = null;
 		try {
 			hmList = (List<HashMap>) sqlMapClient.queryForList("sumHotel", hm);
+			if(!CollectionUtils.isEmpty(hmList)){
+				for(HashMap map : hmList){
+					if(hm.get("lx") != null){
+						String lx = hm.get("lx").toString();
+						if("1".equals(lx)){
+							map.put("pg", map.get("pg").toString()+"分");
+						}
+						if("5".equals(lx)){
+							map.put("pg", map.get("pg").toString()+"星");
+						}
+					}
+				}
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
