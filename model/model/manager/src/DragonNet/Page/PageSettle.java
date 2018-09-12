@@ -62,14 +62,34 @@ public class PageSettle extends HttpServlet {
 		return;
 	}
 	
-	//测试页面
-	public void test(HttpServletRequest request,HttpServletResponse response)
+	//设置位置或多边形区域
+	public void setptpoligon(HttpServletRequest request,HttpServletResponse response)
 		throws ServletException,IOException{
-		String objType = (String)request.getParameter("type");
-		String objID = (String)request.getParameter("id");
+		String table = (String)request.getParameter("table");
+		String field = (String)request.getParameter("field");
+		String id = (String)request.getParameter("id");
+		String power = (String)request.getParameter("power");
+		int editType = 0;		//只选择位置
 		boolean error = false;
-		int selType = 0;			//select point or polygon
-		if (null == objType || objType.isEmpty() || null == objID || objID.isEmpty()){
+		if (null == table || table.isEmpty() || null == id || id.isEmpty()){
+			error = true;
+		}else{
+			table = table.toUpperCase();
+			if(!table.equals("HHLY_LYXM")){
+				if (null == field || field.isEmpty()){
+					error = true;
+				}else{
+					field = field.toUpperCase();
+					if (field.indexOf("ZB")<0 && field.indexOf("GPS")<0){
+						//防止字段名称搞错或恶意攻击
+						error = true;
+					}
+				}
+			}else{
+				editType = 1;		//位置和范围
+			}
+		}
+		if (error){
 			request.setAttribute("errorMsg", "参数错误");
 			error(request,response);
 			return;
@@ -83,10 +103,19 @@ public class PageSettle extends HttpServlet {
 				return;
 			}
 		}
-		request.setAttribute("objType", objType);
-		request.setAttribute("objID", objID);
-		request.getRequestDispatcher("test.jsp").forward(request, response);
+		if (null != power && power.equals("edit")){
+			request.setAttribute("edit", true);
+		}
+		HashMap hm = new HashMap();
+		hm.put("table",table);
+		hm.put("field",field);
+		hm.put("id",id);
+		//用随机数保存参数，避免在页面提交更新是直接用表名和字段名，提高安全性
+		String ramdom = GlobalFun.GetRandString(32);
+		request.getSession().setAttribute(ramdom, hm);
+		request.setAttribute("editInfo", ramdom);
+		request.setAttribute("editType", editType);
+		request.getRequestDispatcher("setptpoligon.jsp").forward(request, response);
 		return;
 	}
 }
-
