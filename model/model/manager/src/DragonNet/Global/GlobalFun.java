@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -758,6 +759,21 @@ public final class GlobalFun {
 
 		}
 		return list;
+	}
+	
+	//产生随机字符串
+	public static String GetRandString(int len){
+		if (len < 1)
+			return "";
+		String sRand=""; 
+		String strList="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		Random random = new Random(); 
+		for (int i=0;i<len;i++){
+			int r = random.nextInt(62);
+			char cRand =strList.charAt(r); 
+			sRand+=cRand; 
+		}
+		return sRand;
 	}
 
 }
