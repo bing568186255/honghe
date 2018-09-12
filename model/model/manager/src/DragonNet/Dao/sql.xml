@@ -3,7 +3,7 @@
     PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"        
     "http://ibatis.apache.org/dtd/sql-map-2.dtd">
 <sqlMap>
-	<sql id="lyxm">
+	<!-- <sql id="lyxm">
 		(SELECT
 		A .*, D ."JSJD" AS "JSZT"
 		FROM
@@ -25,6 +25,14 @@
 		WHERE
 		c.rk = 1
 		) D ON A ."ID" = D ."XMID")
+	</sql> -->
+	
+	<sql id="lyxm">
+		(SELECT
+		A .*, A ."XMJD" AS "JSZT"
+		FROM
+		"HHLY_LYXM" A
+		)
 	</sql>
 
 	<select id="getXMSTJ" parameterClass="java.util.HashMap"
@@ -196,6 +204,7 @@
 		FROM
 		"HHLY_QXDY"
 		<dynamic prepend="where">
+		"LX"=4
 			<isPropertyAvailable prepend="and" property="qxbm">
 				"BM"=#qxbm#
 			</isPropertyAvailable>

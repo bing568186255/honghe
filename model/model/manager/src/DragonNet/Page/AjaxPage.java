@@ -280,7 +280,7 @@ public class AjaxPage extends HttpServlet {
 					// 项目总数
 					HashMap<String, Object> firstLi = buildMap("id,itemname,itemcount,itemdesign,itemactually",
 							index+","+"项目数量"+","+formatNum(map.get("xmzs"))+","+formatNum(map.get("xmztz"))+","+formatNum(map.get("sjljtz")));
-					parentList.add(firstLi);
+					if(firstLi!=null)parentList.add(firstLi);
 					HashMap<String, Object> secondeLi = new HashMap<>();
 					if (!CollectionUtils.isEmpty(jsztList) && !jsztList.contains("已完成")) {
 						secondeLi = buildMap("completename,completeNum,completedesign,completeactually,jszt",
@@ -292,7 +292,7 @@ public class AjaxPage extends HttpServlet {
 								"完工数"+","+(wgs == null ? 0 : formatNum(wgs.get("xmzs")))+","
 						+(wgs == null ? 0 : formatNum(wgs.get("xmztz")))+","+(wgs == null ? 0 : formatNum(wgs.get("sjljtz")))+","+ "已完成");
 					}
-					parentList.add(secondeLi);
+					if(secondeLi!=null)parentList.add(secondeLi);
 					HashMap<String, Object> thirdLi = new HashMap<>();
 					if (!CollectionUtils.isEmpty(jsztList) && !jsztList.contains("建设中")) {
 						thirdLi = buildMap("bulidname,bulidNum,buliddesign,bulidactually,jszt",
@@ -304,7 +304,7 @@ public class AjaxPage extends HttpServlet {
 								"建设数量"+","+(wwc == null ? 0 : formatNum(wwc.get("xmzs")))+","
 						+(wwc == null ? 0 : formatNum(wwc.get("xmztz")))+","+(wwc == null ? 0 : formatNum(wwc.get("sjljtz")))+","+ "建设中");
 					}
-					parentList.add(thirdLi);
+					if(thirdLi!=null)parentList.add(thirdLi);
 					HashMap<String, Object> fourLi = new HashMap<>();
 					if (!CollectionUtils.isEmpty(jsztList) && !jsztList.contains("计划中")) {
 						fourLi = buildMap("planningname,planningNum,buliddesign,bulidactually,jszt",
@@ -317,7 +317,7 @@ public class AjaxPage extends HttpServlet {
 								+","+(jhz == null ? 0 : formatNum(jhz.get("xmztz")))
 								+","+(jhz == null ? 0 : formatNum(jhz.get("sjljtz")))+","+ "计划中");
 					}
-					parentList.add(fourLi);
+					if(fourLi!=null)parentList.add(fourLi);
 					item.put("list", parentList);
 					index++;
 					// 县下面旅游项目集合构建
@@ -355,8 +355,14 @@ public class AjaxPage extends HttpServlet {
 		for (HashMap hMap : listLYXM) {
 			if (hMap != null) {
 				HashMap subItem = new HashMap();
+				if(hMap.get("XMZB") == null){
+					continue;
+				}
 				String[] positionArray = hMap.get("XMZB").toString().split(",");
 				HashMap subPosition = new HashMap();
+				if(positionArray.length <=1){
+					continue;
+				}
 				subPosition.put("longitude", positionArray[0]);
 				subPosition.put("latitude", positionArray[1]);
 				subItem.put("position", subPosition);
@@ -367,7 +373,7 @@ public class AjaxPage extends HttpServlet {
 				HashMap<String, Object> subFirstLi =buildMap("id,itemnature,itemtype,itmeproperty,itemformat,planningland,importantitem,itemstate",
 						ii+","+ hMap.get("ZDXMXZJWH")+","+hMap.get("XMLX")+","+hMap.get("XMSX")+","+ hMap.get("XMYT")+","+hMap.get("GHYD")
 						+","+hMap.get("XMXZ")+","+hMap.get("JSZT"));
-				subTKList.add(subFirstLi);
+				if(subFirstLi!=null)subTKList.add(subFirstLi);
 				subItem.put("list", subTKList);
 				subList.add(subItem);
 				ii++;
@@ -400,11 +406,11 @@ public class AjaxPage extends HttpServlet {
 		return map;
 	}
 
-	private int formatNum(Object obj) {
+	private Double formatNum(Object obj) {
 		if (obj == null || "".equals(obj)) {
-			return 0;
+			return 0d;
 		}
-		return Integer.parseInt(obj.toString());
+		return Double.parseDouble(obj.toString());
 	}
 
 	@SuppressWarnings("unused")
