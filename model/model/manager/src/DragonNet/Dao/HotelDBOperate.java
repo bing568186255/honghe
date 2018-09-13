@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
 
@@ -31,10 +32,10 @@ public class HotelDBOperate {
 					if(hm.get("lx") != null){
 						String lx = hm.get("lx").toString();
 						if("1".equals(lx)){
-							map.put("pg", map.get("pg").toString()+"分");
+							map.put("pg", map.get("pg")==null?0:map.get("pg").toString()+"分");
 						}
 						if("5".equals(lx)){
-							map.put("pg", map.get("pg").toString()+"星");
+							map.put("pg", map.get("pg")==null?0:map.get("pg").toString()+"星");
 						}
 					}
 				}

@@ -186,7 +186,7 @@ public class HotelPage  extends HttpServlet {
 		if(!CollectionUtils.isEmpty(lxsList)){
 			HashMap dx = lxsList.get(0);
 			if(dx != null && dx.get("PGFS") != null){
-				Integer pgfs = Integer.valueOf(dx.get("PGFS").toString());
+				Integer pgfs = Double.valueOf(dx.get("PGFS").toString()).intValue();
 				StringBuffer sb = new StringBuffer();
 				for(int i = 0 ; i<pgfs ; i++){
 					sb.append("★");

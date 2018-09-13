@@ -370,9 +370,12 @@ public class AjaxPage extends HttpServlet {
 				subItem.put("jszt", hMap.get("JSZT"));
 				subItem.put("ztz", hMap.get("ZTZ"));	
 				List<HashMap<String, Object>> subTKList = new ArrayList<>();
+				Object [] values = {ii,hMap.get("ZDXMXZJWH"),hMap.get("XMLX"),hMap.get("XMSX"),hMap.get("XMYT"),hMap.get("GHYD")
+								,hMap.get("XMXZ"),hMap.get("JSZT")};
 				HashMap<String, Object> subFirstLi =buildMap("id,itemnature,itemtype,itmeproperty,itemformat,planningland,importantitem,itemstate",
-						ii+","+ hMap.get("ZDXMXZJWH")+","+hMap.get("XMLX")+","+hMap.get("XMSX")+","+ hMap.get("XMYT")+","+hMap.get("GHYD")
-						+","+hMap.get("XMXZ")+","+hMap.get("JSZT"));
+						values);
+						/*ii+","+ hMap.get("ZDXMXZJWH")+","+hMap.get("XMLX")+","+hMap.get("XMSX")+","+ hMap.get("XMYT")+","+hMap.get("GHYD")
+						+","+hMap.get("XMXZ")+","+hMap.get("JSZT"));*/
 				if(subFirstLi!=null)subTKList.add(subFirstLi);
 				subItem.put("list", subTKList);
 				subList.add(subItem);
@@ -381,7 +384,27 @@ public class AjaxPage extends HttpServlet {
 		}
 		return subList;
 	}
-	
+	/**
+	 * 封装map
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private HashMap buildMap(String key,Object[] values){
+		if(StringUtils.isEmpty(key) || values.length <=0) {
+			return null;
+		}
+		String [] keyArr = key.split(",");
+		if(keyArr.length != values.length){
+			return null;
+		}
+		HashMap map = new HashMap();
+		for(int i = 0 ;i<keyArr.length; i++){
+			map.put(keyArr[i], values[i]);
+		}
+		return map;
+	}
 	
 	/**
 	 * 封装map
